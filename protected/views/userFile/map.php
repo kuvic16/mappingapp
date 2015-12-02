@@ -3,20 +3,20 @@
 /* @var $this UserFileController */
 /* @var $model UserFile */
 
-$this->breadcrumbs=array(
-        'My Files'=>array('manage'),
-	$model->id,
+$this->breadcrumbs = array(
+    'My Files' => array('manage'),
+    $model->id,
 );
 
-$this->menu=array(
-        array('label'=>'Update this File', 'url'=>array('update', 'id'=>$model->id)),
-    	array('label'=>'Upload File', 'url'=>array('upload')),
-        array('label'=>'My Files', 'url'=>array('manage')),
-);
+//$this->menu=array(
+//        array('label'=>'Update this File', 'url'=>array('update', 'id'=>$model->id)),
+//    	array('label'=>'Upload File', 'url'=>array('upload')),
+//        array('label'=>'My Files', 'url'=>array('manage')),
+//);
 ?>
 
 <h1><?php echo $model->file_name; ?></h1>
-<div id="map" style="height: 400px;  border: 1px solid gray"></div>
+<div id="map" style="height: 600px; width: 900px;  border: 1px solid gray"></div>
 
 <script type="text/javascript">
     var locations = [
@@ -39,23 +39,31 @@ if (($handle = fopen($path, "r")) !== FALSE) {
 }
 ?>
     ];
-    
-    
+
+
 
     function initMap() {
+        var infowindowlist = new Array();
+        google.maps.Map.prototype.clearInfoWindow = function () {
+            for (var i = 0; i < infowindowlist.length; i++) {
+                if (infowindowlist[i]) infowindowlist[i].close();
+            }
+        };
+        
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 6
         });
         var geocoder = new google.maps.Geocoder();
         var i;
+        //console.log(locations.length);
         for (i = 0; i < locations.length; i++) {
             geocode(geocoder, locations[i], i, function (results, i) {
-                console.log(i);
+                //console.log(i);
                 map.setCenter(results[0].geometry.location);
                 var marker = new google.maps.Marker({
                     map: map,
                     position: results[0].geometry.location,
-                    mapTypeId:google.maps.MapTypeId.ROADMAP
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
                 var contentString = '<div id="content">' +
                         '<div id="siteNotice">' +
@@ -72,14 +80,17 @@ if (($handle = fopen($path, "r")) !== FALSE) {
                         '</p>' +
                         '</div>' +
                         '</div>';
-                
+
                 var infowindow = new google.maps.InfoWindow({
-                        content: contentString
+                    content: contentString
                 });
+                
+                infowindowlist[infowindowlist.length] = infowindow;
                 marker.addListener('click', function () {
-                    infowindow.open(map, marker); 
+                    map.clearInfoWindow();
+                    infowindow.open(map, marker);
                 });
-                    
+
             });
         }
     }
@@ -87,11 +98,18 @@ if (($handle = fopen($path, "r")) !== FALSE) {
     function geocode(geocoder, location, i, callback) {
         geocoder.geocode({'address': location[1]}, function (results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
+                //console.error('Geocode for: '+ location[1]+' was not successful for the following reason: ' + status)
                 if (typeof callback === "function") {
                     callback(results, i);
                 }
+            } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                //console.error('Geocode for: '+ location[1]+' was not successful for the following reason: ' + status)
+                setTimeout(function () {
+                    geocode(geocoder, location, i, callback);
+                }, 20);
             } else {
-                alert('Geocode was not successful for the following reason: ' + status);
+                //alert('Geocode was not successful for the following reason: ' + status);
+                //console.error('Geocode for: '+ i + location[1]+' was not successful for the following reason: ' + status)
             }
         });
     }
