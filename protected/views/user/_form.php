@@ -8,10 +8,6 @@
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'user-form',
-	// Please note: When you enable ajax validation, make sure the corresponding
-	// controller action is handling ajax validation correctly.
-	// There is a call to performAjaxValidation() commented in generated controller code.
-	// See class documentation of CActiveForm for details on this.
 	'enableAjaxValidation'=>false,
 )); ?>
 
@@ -50,12 +46,6 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'middle_name'); ?>
-		<?php echo $form->textField($model,'middle_name',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($model,'middle_name'); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->labelEx($model,'last_name'); ?>
 		<?php echo $form->textField($model,'last_name',array('size'=>45,'maxlength'=>45)); ?>
 		<?php echo $form->error($model,'last_name'); ?>
@@ -67,20 +57,16 @@
 		<?php echo $form->error($model,'address'); ?>
 	</div>
 
-        <?php if(!Yii::app()->user->isGuest &&  Yii::app()->user->name=='admin'){ ?>
-	<div class="row">
+        <?php if(!Yii::app()->user->isGuest &&  (Yii::app()->user->name=='admin' || Yii::app()->user->subscription_level=='Admin')){ ?>
+        <div class="row">
 		<?php echo $form->labelEx($model,'subscription_level'); ?>
-		<?php //echo $form->textField($model,'subscription_level',array('size'=>45,'maxlength'=>45)); ?>
-                <?php echo $form->dropDownList($model, 'subscription_level', 
+		<?php echo $form->dropDownList($model, 'subscription_level', 
                         array('Free user' => 'Free user', 'Power User' => 'Power user', 'Admin' => 'Admin'));?>
 		<?php echo $form->error($model,'subscription_level'); ?>
 	</div>
-        <?php } ?>
-
-	<div class="row">
+        <div class="row">
 		<?php echo $form->labelEx($model,'renewal_date'); ?>
-		<?php //echo $form->textField($model,'renewal_date',array('size'=>45,'maxlength'=>45));?>
-                <?php $this->widget('zii.widgets.jui.CJuiDatePicker',
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker',
                     array(
                     'name' => 'renewal_date',
                     'attribute' => 'renewal_date',
@@ -96,10 +82,17 @@
                     ?>
 		<?php echo $form->error($model,'renewal_date'); ?>
 	</div>
-
+        <?php } ?>
+	
+        <?php if(Yii::app()->user->isGuest){ ?>
 	<div class="row buttons">
+		<?php echo CHtml::submitButton('Submit'); ?>
+	</div>
+        <?php }else{ ?>
+        <div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>
+        <?php } ?>
 
 <?php $this->endWidget(); ?>
 

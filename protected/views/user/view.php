@@ -25,7 +25,6 @@ $this->menu=array(
 		'username',
 		'email',
 		'first_name',
-		'middle_name',
 		'last_name',
 		'address',
 		'subscription_level',
