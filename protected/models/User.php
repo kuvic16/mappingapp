@@ -9,7 +9,6 @@
  * @property string $email
  * @property string $password
  * @property string $first_name
- * @property string $middle_name
  * @property string $last_name
  * @property string $address
  * @property string $subscription_level
@@ -36,11 +35,11 @@ class User extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('username, email, password_first, password_repeat', 'required'),
-			array('username, email, first_name, middle_name, last_name, subscription_level, renewal_date', 'length', 'max'=>45),
+			array('username, email, first_name, last_name, subscription_level, renewal_date', 'length', 'max'=>45),
 			array('password_first, password_repeat, address', 'length', 'max'=>500),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('username, email, first_name, middle_name, last_name, subscription_level, renewal_date', 'safe', 'on'=>'search'),
+			array('username, email, first_name, last_name, subscription_level, renewal_date', 'safe', 'on'=>'search'),
                         array('username', 'unique'),
 //                        array('password_first', 'compare'),
 //                        array('password_repeat', 'safe'),
@@ -71,7 +70,6 @@ class User extends CActiveRecord
                         'password_first' => 'Password',
                         'password_repeat' => 'Password Repeat',
 			'first_name' => 'First Name',
-			'middle_name' => 'Middle Name',
 			'last_name' => 'Last Name',
 			'address' => 'Address',
 			'subscription_level' => 'Subscription Level',
@@ -102,7 +100,6 @@ class User extends CActiveRecord
 		$criteria->compare('email',$this->email,true);
 		//$criteria->compare('password',$this->password,true);
 		$criteria->compare('first_name',$this->first_name,true);
-		$criteria->compare('middle_name',$this->middle_name,true);
 		$criteria->compare('last_name',$this->last_name,true);
 		//$criteria->compare('address',$this->address,true);
 		$criteria->compare('subscription_level',$this->subscription_level,true);
