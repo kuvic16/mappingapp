@@ -67,6 +67,7 @@
 		<?php echo $form->error($model,'address'); ?>
 	</div>
 
+        <?php if(!Yii::app()->user->isGuest &&  Yii::app()->user->name=='admin'){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'subscription_level'); ?>
 		<?php //echo $form->textField($model,'subscription_level',array('size'=>45,'maxlength'=>45)); ?>
@@ -74,6 +75,7 @@
                         array('Free user' => 'Free user', 'Power User' => 'Power user', 'Admin' => 'Admin'));?>
 		<?php echo $form->error($model,'subscription_level'); ?>
 	</div>
+        <?php } ?>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'renewal_date'); ?>
