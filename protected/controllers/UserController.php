@@ -86,18 +86,12 @@ class UserController extends Controller
         public function actionRegistration()
 	{
 		$model=new User;
-
-		// Uncomment the following line if AJAX validation is needed
 		//$this->performAjaxValidation($model);
-
 		if(isset($_POST['User']))
 		{
 			$model->attributes=$_POST['User'];
-                        if($model->save())
-				//$this->redirect(array('registration',array('model'=>$model,)));
-                                $this->render('registration',array('model'=>$model,));
+                        $model->save();
 		}
-
 		$this->render('registration',array('model'=>$model,));
 	}
         
