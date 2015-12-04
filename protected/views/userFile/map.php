@@ -60,16 +60,16 @@ if ($length > 1) {
             var address = locations[i][1].split(">");
             if(address.length <= 1){
                 geocode(geocoder, locations[i], i, function (results, i) {
-                    addMarker(map, results[0].geometry.location, locations[i]);
+                    addMarker(map, results[0].geometry.location, locations[i], i);
                 });
             }else{
                 var latLng = new google.maps.LatLng(parseFloat(address[1]),parseFloat(address[2]));
-                addMarker(map, latLng, locations[i]);
+                addMarker(map, latLng, locations[i], i);
             }
         }
     }
 
-    function addMarker(map, latlon, locations) {
+    function addMarker(map, latlon, locations, i) {
         map.setCenter(latlon);
         var marker = new google.maps.Marker({
             map: map,
@@ -77,9 +77,12 @@ if ($length > 1) {
             mapTypeId: google.maps.MapTypeId.ROADMAP
         });
         var contentString = '<div id="content">' +
-                '<div id="siteNotice">' +
-                '</div>' +
-                '<h1 id="firstHeading" class="firstHeading">' + locations[0] + '</h1>' +
+                '<img src="<?php echo Yii::app()->request->baseUrl; ?>/css/ajax-loader.gif" id="ntf">' +
+                '</img>' +
+//                '<h1 id="firstHeading" class="firstHeading">' + locations[0] + '</h1>' +
+                '<div class="inputdiv">'+
+                '<input onblur="myFunction(\''+ i +'\',\'0\', this);" id="firstHeading" value="' + locations[0] + '" class="firstHeading"></input>' +
+                '</div>'+
                 '<div id="bodyContent" class="bodyContent">' +
                 '<p>' + locations[1].split(">")[0] + '<br/>' +
                 '' + locations[2] + ' ' + locations[3] + ', ' + locations[4] + '<br/>' +
@@ -100,6 +103,7 @@ if ($length > 1) {
         marker.addListener('click', function () {
             map.clearInfoWindow();
             infowindow.open(map, marker);
+            $("#ntf").hide();
         });
     }
 
@@ -138,5 +142,29 @@ if ($length > 1) {
                 console.log("failure" + xhr.readyState + this.url);
             }
         });
+    }
+    
+    function myFunction(row_id, column_id, element){
+        if(locations[row_id][column_id] !== $(element).val()){
+            $("#ntf").show();
+            $.ajax({
+                type: "POST",
+                url: "<?php echo Yii::app()->createUrl('userFile/dataUpdate'); ?>",
+                data: {
+                    file_name: "<?php echo $model->physical_file_name; ?>",
+                    row_id: row_id,
+                    column_id: column_id,
+                    column_value: $(element).val()
+                },
+                success: function (msg) {
+                    locations[row_id][column_id] = $(element).val();
+                    $("#ntf").hide();
+                },
+                error: function (xhr) {
+                    console.log("failure" + xhr.readyState + this.url);
+                    $("#ntf").hide();
+                }
+            });
+        }
     }
 </script>
