@@ -26,7 +26,7 @@ class UserFileController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view', 'map'),
+                'actions' => array('index', 'view', 'map', 'locationUpdate'),
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'upload' and 'update' actions
@@ -48,8 +48,10 @@ class UserFileController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        $model = $this->loadModel($id);
+        $model->csv_data = $this->loadCsvFile($model->physical_file_name);
         $this->render('map', array(
-            'model' => $this->loadModel($id),
+            'model' => $model,
         ));
     }
 
@@ -246,6 +248,36 @@ class UserFileController extends Controller {
         }
         fclose($handle);
     }
+    
+    
+    private function updateLatLon($file_path, $lat, $lon, $row_id) {
+        $path = Yii::app()->runtimePath . '/temp/' . $file_path;
+
+        $row = 1;
+        $newCsvData = array();
+        var_dump($row_id);
+        if (($handle = fopen($path, "a+")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                if ($row == $row_id) {
+                    $address = $data[1];
+                    $locations = explode(">", $address);
+                    var_dump($locations);
+                    if(count($locations) <=1){
+                        $data[1] = $data[1].">".$lat.">".$lon;
+                    }
+                }
+                array_push($newCsvData, $data);
+                $row++;
+            }
+            fclose($handle);
+        }
+
+        $handle = fopen($path, 'w');
+        foreach ($newCsvData as $line) {
+            fputcsv($handle, $line);
+        }
+        fclose($handle);
+    }
 
     /**
      * Deletes a particular model.
@@ -302,21 +334,6 @@ class UserFileController extends Controller {
         $fileModel = new FileUploadForm();
         $fileModel = $model;
 
-//                $path = Yii::app()->runtimePath.'/temp/'.$fileModel->physical_file_name;
-//                echo $path;
-//                $row = 1;
-//                if(($handle=  fopen($path, "r")) !== FALSE){
-//                    while(($data = fgetcsv($handle, 1000, ",")) !== FALSE){
-//                        $num = count($data);
-//                        echo $num. ' | ';
-//                        for ($c=0; $c < $num; $c++){
-//                            echo '- '. $data[$c];
-//                        }
-//                        ++$row;
-//                    }
-//                    fclose($handle);
-//                }
-
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $fileModel;
@@ -331,6 +348,16 @@ class UserFileController extends Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+    
+    public function actionLocationUpdate() {
+        $file_name = $_POST['file_name'];
+        $lat = $_POST['lat'];
+        $lon = $_POST['lon'];
+        $row_id = $_POST['row_id'];
+        $this->updateLatLon($file_name, $lat, $lon, $row_id);
+        echo $row_id;
+        Yii::app()->end();
     }
 
 }
