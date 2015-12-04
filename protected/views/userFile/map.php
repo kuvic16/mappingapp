@@ -18,102 +18,125 @@ $this->breadcrumbs = array(
 <h1><?php echo $model->file_name; ?></h1>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray"></div>
 
+<script type='text/javascript' src='<?php echo Yii::app()->request->baseUrl; ?>/js/jquery.js'></script>
 <script type="text/javascript">
     var locations = [
 <?php
-$path = Yii::app()->runtimePath . '/temp/' . $model->physical_file_name;
 $row = 1;
-if (($handle = fopen($path, "r")) !== FALSE) {
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+$length = count($model->csv_data);
+if ($length > 1) {
+    foreach ($model->csv_data as $data) {
         if ($row !== 1) {
-            $num = count($data);
             ?>
-                    [<?php echo "'" . $data[0] . "'"; ?>, <?php echo "'" . $data[1] . "'"; ?>, <?php echo "'" . $data[2] . "'"; ?>,
-            <?php echo "'" . $data[3] . "'"; ?>, <?php echo "'" . $data[4] . "'"; ?>, <?php echo "'" . $data[5] . "'"; ?>,
-            <?php echo "'" . $data[6] . "'"; ?>, <?php echo "'" . $data[7] . "'"; ?>, <?php echo "'" . $data[8] . "'"; ?>, <?php echo "'" . $data[9] . "'"; ?>],
+            [
+                <?php echo "'" . $data[0] . "'"; ?>, <?php echo "'" . $data[1] . "'"; ?>, <?php echo "'" . $data[2] . "'"; ?>,
+                <?php echo "'" . $data[3] . "'"; ?>, <?php echo "'" . $data[4] . "'"; ?>, <?php echo "'" . $data[5] . "'"; ?>,
+                <?php echo "'" . $data[6] . "'"; ?>, <?php echo "'" . $data[7] . "'"; ?>, <?php echo "'" . $data[8] . "'"; ?>, <?php echo "'" . $data[9] . "'"; ?>
+            ],
             <?php
         }
-        $row = 2;
+        $row++;
     }
-    fclose($handle);
 }
 ?>
     ];
 
 
-
+    var infowindowlist = new Array();        
     function initMap() {
-        var infowindowlist = new Array();
         google.maps.Map.prototype.clearInfoWindow = function () {
             for (var i = 0; i < infowindowlist.length; i++) {
-                if (infowindowlist[i]) infowindowlist[i].close();
+                if (infowindowlist[i])
+                    infowindowlist[i].close();
             }
         };
-        
+
         var map = new google.maps.Map(document.getElementById('map'), {
             zoom: 6
         });
         var geocoder = new google.maps.Geocoder();
         var i;
-        //console.log(locations.length);
         for (i = 0; i < locations.length; i++) {
-            geocode(geocoder, locations[i], i, function (results, i) {
-                //console.log(i);
-                map.setCenter(results[0].geometry.location);
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
+            var address = locations[i][1].split(">");
+            if(address.length <= 1){
+                geocode(geocoder, locations[i], i, function (results, i) {
+                    addMarker(map, results[0].geometry.location, locations[i]);
                 });
-                var contentString = '<div id="content">' +
-                        '<div id="siteNotice">' +
-                        '</div>' +
-                        '<h1 id="firstHeading" class="firstHeading">' + locations[i][0] + '</h1>' +
-                        '<div id="bodyContent" class="bodyContent">' +
-                        '<p>' + locations[i][1] + '<br/>' +
-                        '' + locations[i][2] + ' ' + locations[i][3] + ', ' + locations[i][4] + '<br/>' +
-                        '' + locations[i][5] + '<br/>' +
-                        '<b> Contact:</b> ' + locations[i][6] + '<br/>' +
-                        '<b> Rank:</b> ' + locations[i][7] + '<br/>' +
-                        '<b> Cor A/C:</b> ' + locations[i][8] + '<br/>' +
-                        '<b> Grand Total:</b> ' + locations[i][9] + '<br/>' +
-                        '</p>' +
-                        '</div>' +
-                        '</div>';
-
-                var infowindow = new google.maps.InfoWindow({
-                    content: contentString
-                });
-                
-                infowindowlist[infowindowlist.length] = infowindow;
-                marker.addListener('click', function () {
-                    map.clearInfoWindow();
-                    infowindow.open(map, marker);
-                });
-
-            });
+            }else{
+                var latLng = new google.maps.LatLng(parseFloat(address[1]),parseFloat(address[2]));
+                addMarker(map, latLng, locations[i]);
+            }
         }
+    }
+
+    function addMarker(map, latlon, locations) {
+        map.setCenter(latlon);
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlon,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        var contentString = '<div id="content">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<h1 id="firstHeading" class="firstHeading">' + locations[0] + '</h1>' +
+                '<div id="bodyContent" class="bodyContent">' +
+                '<p>' + locations[1].split(">")[0] + '<br/>' +
+                '' + locations[2] + ' ' + locations[3] + ', ' + locations[4] + '<br/>' +
+                '' + locations[5] + '<br/>' +
+                '<b> Contact:</b> ' + locations[6] + '<br/>' +
+                '<b> Rank:</b> ' + locations[7] + '<br/>' +
+                '<b> Cor A/C:</b> ' + locations[8] + '<br/>' +
+                '<b> Grand Total:</b> ' + locations[9] + '<br/>' +
+                '</p>' +
+                '</div>' +
+                '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        infowindowlist[infowindowlist.length] = infowindow;
+        marker.addListener('click', function () {
+            map.clearInfoWindow();
+            infowindow.open(map, marker);
+        });
     }
 
     function geocode(geocoder, location, i, callback) {
         geocoder.geocode({'address': location[1]}, function (results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
-                //console.error('Geocode for: '+ location[1]+' was not successful for the following reason: ' + status)
                 if (typeof callback === "function") {
+                    callServer(results[0].geometry.location.lat(), results[0].geometry.location.lng(), i+2);
                     callback(results, i);
                 }
             } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-                //console.error('Geocode for: '+ location[1]+' was not successful for the following reason: ' + status)
                 setTimeout(function () {
                     geocode(geocoder, location, i, callback);
                 }, 20);
             } else {
-                //alert('Geocode was not successful for the following reason: ' + status);
-                //console.error('Geocode for: '+ i + location[1]+' was not successful for the following reason: ' + status)
+                console.error('Geocode for: '+ i + location[1]+' was not successful for the following reason: ' + status);
             }
         });
     }
     initMap();
+
+    function callServer(lat, lon, row_id) {
+        $.ajax({
+            type: "POST",
+            url: "<?php echo Yii::app()->createUrl('userFile/locationUpdate'); ?>",
+            data: {
+                file_name: "<?php echo $model->physical_file_name; ?>",
+                lat: lat,
+                lon: lon,
+                row_id: row_id
+            },
+            success: function (msg) {
+                console.log("Sucess");
+            },
+            error: function (xhr) {
+                console.log("failure" + xhr.readyState + this.url);
+            }
+        });
+    }
 </script>
-<?php
-?>
