@@ -26,7 +26,7 @@ class UserFileController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view', 'map', 'locationUpdate'),
+                'actions' => array('index', 'view', 'map', 'locationUpdate', 'dataUpdate'),
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'upload' and 'update' actions
@@ -356,7 +356,22 @@ class UserFileController extends Controller {
         $lon = $_POST['lon'];
         $row_id = $_POST['row_id'];
         $this->updateLatLon($file_name, $lat, $lon, $row_id);
-        echo $row_id;
+        Yii::app()->end();
+    }
+    
+    public function actionDataUpdate() {
+        $file_name = $_POST['file_name'];
+        $row_id = $_POST['row_id'];
+        $column_id = $_POST['column_id'];
+        $column_value = $_POST['column_value'];
+        
+        $model = new UserFile();
+        $model->physical_file_name = $file_name;
+        $model->row_id = $row_id + 2;
+        $model->column_id = $column_id;
+        $model->column_value = $column_value;
+        var_dump($model);
+        $this->editCsvColumn($model);
         Yii::app()->end();
     }
 
