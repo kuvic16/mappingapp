@@ -79,19 +79,17 @@ if ($length > 1) {
         var contentString = '<div id="content">' +
                 '<img src="<?php echo Yii::app()->request->baseUrl; ?>/css/ajax-loader.gif" id="ntf">' +
                 '</img>' +
-//                '<h1 id="firstHeading" class="firstHeading">' + locations[0] + '</h1>' +
-                '<div class="inputdiv">'+
-                '<input onblur="myFunction(\''+ i +'\',\'0\', this);" id="firstHeading" value="' + locations[0] + '" class="firstHeading"></input>' +
-                '</div>'+
+                '<input class="map-text-box firstHeading" onblur="changeRequest(\''+ i +'\',\'0\', this);" id="firstHeading" value="' + locations[0] + '"></input>' +
                 '<div id="bodyContent" class="bodyContent">' +
-                '<p>' + locations[1].split(">")[0] + '<br/>' +
-                '' + locations[2] + ' ' + locations[3] + ', ' + locations[4] + '<br/>' +
-                '' + locations[5] + '<br/>' +
-                '<b> Contact:</b> ' + locations[6] + '<br/>' +
-                '<b> Rank:</b> ' + locations[7] + '<br/>' +
-                '<b> Cor A/C:</b> ' + locations[8] + '<br/>' +
-                '<b> Grand Total:</b> ' + locations[9] + '<br/>' +
-                '</p>' +
+                '<input class="map-text-box hundred" onblur="changeRequest(\''+ i +'\',\'1\', this);" value="' + locations[1].split(">")[0] + '"></input>' +
+                '<br/><input class="map-text-box margin-right-3" onblur="changeRequest(\''+ i +'\',\'2\', this);" value="' + locations[2] + '"></input>' +
+                '<input style="float:right" class="map-text-box margin-right-3" onblur="changeRequest(\''+ i +'\',\'3\', this);" value="' + locations[3] + '"></input>' +
+                '<br/><input class="map-text-box" onblur="changeRequest(\''+ i +'\',\'4\', this);" value="' + locations[4] + '"></input>' +
+                '<br/><input class="map-text-box hundred" onblur="changeRequest(\''+ i +'\',\'5\', this);" value="' + locations[5] + '"></input>' +
+                '<b> Contact:</b> <input class="map-text-box " onblur="changeRequest(\''+ i +'\',\'6\', this);" value="' + locations[6] + '"></input><br/>' +
+                '<b> Rank:</b> <input class="map-text-box" onblur="changeRequest(\''+ i +'\',\'7\', this);" value="' + locations[7] + '"></input><br/>' +
+                '<b> Cor A/C:</b> <input class="map-text-box" onblur="changeRequest(\''+ i +'\',\'8\', this);" value="' + locations[8] + '"></input><br/>' +
+                '<b> Grand Total:</b> <input class="map-text-box" onblur="changeRequest(\''+ i +'\',\'9\', this);" value="' + locations[9] + '"></input><br/>' +
                 '</div>' +
                 '</div>';
 
@@ -144,8 +142,13 @@ if ($length > 1) {
         });
     }
     
-    function myFunction(row_id, column_id, element){
-        if(locations[row_id][column_id] !== $(element).val()){
+    function changeRequest(row_id, column_id, element){
+        var prev_value = locations[row_id][column_id];
+        var new_value = $(element).val();
+        if(column_id === 1){
+            prev_value = locations[row_id][1].split(">")[0];
+        }
+        if(prev_value !== new_value){
             $("#ntf").show();
             $.ajax({
                 type: "POST",
