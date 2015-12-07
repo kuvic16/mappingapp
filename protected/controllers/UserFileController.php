@@ -84,8 +84,16 @@ class UserFileController extends Controller {
                 $model->physical_file_name = $model->username . "-" . time() . "-" . $model->csv_file;
 
                 // create path
-                $path = Yii::app()->runtimePath . '/temp/' . $model->physical_file_name;
+                $app_path = realpath(Yii::app()->basePath . '/../');
+                $path = $app_path . '/files/' . $model->physical_file_name;
+                //$path = 'C:\Users\craigslist\Desktop\temp\\' . $model->physical_file_name;
+                //echo $path;
                 $model->csv_file->saveAs($path);
+                $ext = pathinfo($model->physical_file_name, PATHINFO_EXTENSION);
+                $fileName = pathinfo($model->physical_file_name, PATHINFO_FILENAME);
+                if ($ext === 'xls' || $ext === 'xlsx') {
+                    $this->excelToCsvFile($model->physical_file_name, $fileName.'.csv');
+                } 
             }
 
             if ($model->save())
@@ -104,9 +112,9 @@ class UserFileController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
-        $model->csv_data = $this->loadCsvFile($model->physical_file_name);
+        $model->csv_data = $this->loadCsvFile($model->physical_file_name);        
         //echo '<pre>' . var_export($model->csv_data, true) . '</pre>';
-        
+
         if (isset($_POST['UserFile'])) {
             $model->column_name = $_POST['UserFile']['column_name'];
             $model->column_value = $_POST['UserFile']['column_value'];
@@ -116,12 +124,12 @@ class UserFileController extends Controller {
 
             if ($model->is_new === "1") {
                 $this->addCsvColumn($model);
-            } elseif($model->is_new === "0") {
+            } elseif ($model->is_new === "0") {
                 $this->editCsvColumn($model);
-            } elseif($model->is_new === "2"){
+            } elseif ($model->is_new === "2") {
                 $this->addCsvRow($model);
             }
-            $this->redirect(array('update','id'=>$model->id));
+            $this->redirect(array('update', 'id' => $model->id));
         }
 
         $this->render('update', array(
@@ -129,33 +137,47 @@ class UserFileController extends Controller {
         ));
     }
 
+    /* csv file operation */
+
     private function loadCsvFile($fileName) {
-        $path = Yii::app()->runtimePath . '/temp/' . $fileName;
-        $row = 1; $length=0; $maxLength = -1; $i=0; $needChange=0;
+        $app_path = realpath(Yii::app()->basePath . '/../');
         
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        $orgName = pathinfo($fileName, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $fileName;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $orgName.'.csv';
+        } 
+                
+        $row = 1;
+        $length = 0;
+        $maxLength = -1;
+        $i = 0;
+        $needChange = 0;
+
         //read csv file and store to array
         $csvData = array();
         if (($handle = fopen($path, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $length = count($data);
-                if($row == 1){
+                if ($row == 1) {
                     $maxLength = $length;
                 }
-                if($length > $maxLength){
-                    $needChange=1;
+                if ($length > $maxLength) {
+                    $needChange = 1;
                     $maxLength = $length;
-                }elseif ($length < $maxLength) {
-                    $needChange=1;
+                } elseif ($length < $maxLength) {
+                    $needChange = 1;
                 }
                 array_push($csvData, $data);
                 $row++;
             }
             fclose($handle);
         }
-        
+
         //echo '<pre>' . var_export($maxLength, true) . '</pre>';
         //echo '<pre>' . var_export($needChange, true) . '</pre>';
-        
+
         if ($needChange == 1) {
             //all line have same column
             $prfCsvData = array();
@@ -178,12 +200,20 @@ class UserFileController extends Controller {
             fclose($handle);
             return $prfCsvData;
         }
-        
+
         return $csvData;
     }
 
     public function addCsvColumn($model) {
-        $path = Yii::app()->runtimePath . '/temp/' . $model->physical_file_name;
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        
+        $ext = pathinfo($model->physical_file_name, PATHINFO_EXTENSION);
+        $fileName = pathinfo($model->physical_file_name, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $model->physical_file_name;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $fileName.'.csv';
+        } 
+                
         $row = 1;
         $newCsvData = array();
         if (($handle = fopen($path, "r")) !== FALSE) {
@@ -207,7 +237,15 @@ class UserFileController extends Controller {
     }
 
     public function editCsvColumn($model) {
-        $path = Yii::app()->runtimePath . '/temp/' . $model->physical_file_name;
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        
+        $ext = pathinfo($model->physical_file_name, PATHINFO_EXTENSION);
+        $fileName = pathinfo($model->physical_file_name, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $model->physical_file_name;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $fileName.'.csv';
+        } 
+                
 
         $row = 1;
         $newCsvData = array();
@@ -228,10 +266,17 @@ class UserFileController extends Controller {
         }
         fclose($handle);
     }
-    
-    
+
     public function addCsvRow($model) {
-        $path = Yii::app()->runtimePath . '/temp/' . $model->physical_file_name;
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        
+        $ext = pathinfo($model->physical_file_name, PATHINFO_EXTENSION);
+        $fileName = pathinfo($model->physical_file_name, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $model->physical_file_name;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $fileName.'.csv';
+        } 
+                
 
         $newCsvData = array();
         if (($handle = fopen($path, "r")) !== FALSE) {
@@ -248,10 +293,81 @@ class UserFileController extends Controller {
         }
         fclose($handle);
     }
-    
-    
+
+    /* excel file operation */
+
+    public function excelToCsvFile($excelFileName, $csvFileName) {
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        $path = $app_path . '/files/' . $excelFileName;
+        $csv_path = $app_path . '/files/' . $csvFileName;
+                
+        require('spreadsheet-reader-master/php-excel-reader/excel_reader2.php');
+	require('spreadsheet-reader-master/SpreadsheetReader.php');
+        $reader = new SpreadsheetReader($path);
+
+        $row = 1; $length=0; $maxLength = -1; $i=0; $needChange=0;        
+        //read excel file and store to array
+        $csvData = array();
+        foreach ($reader as $data){
+            $length = count($data);
+            if ($row == 1) {
+                $maxLength = $length;
+            }
+            if ($length > $maxLength) {
+                $needChange = 1;
+                $maxLength = $length;
+            } elseif ($length < $maxLength) {
+                $needChange = 1;
+            }
+            array_push($csvData, $data);
+            $row++;
+        }
+        echo '<pre>' . var_export($csvData, true) . '</pre>';
+
+        //echo '<pre>' . var_export($maxLength, true) . '</pre>';
+        //echo '<pre>' . var_export($needChange, true) . '</pre>';
+        
+        if ($needChange == 1) {
+            //all line have same column
+            $prfCsvData = array();
+            foreach ($csvData as $line) {
+                $length = count($line);
+                if ($length < $maxLength) {
+                    for ($i = $length; $i < $maxLength; $i++) {
+                        array_push($line, "");
+                    }
+                }
+                array_push($prfCsvData, $line);
+            }
+
+            //save to file
+            $handle = fopen($csv_path, 'w');
+            foreach ($prfCsvData as $line) {
+                fputcsv($handle, $line);
+            }
+            fclose($handle);
+        }else{
+            //save to file
+            $handle = fopen($csv_path, 'w');
+            foreach ($csvData as $line) {
+                fputcsv($handle, $line);
+            }
+            fclose($handle);
+        }
+    }
+
+    /* location update operation */
+
     private function updateLatLon($file_path, $lat, $lon, $row_id) {
-        $path = Yii::app()->runtimePath . '/temp/' . $file_path;
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        
+        $ext = pathinfo($file_path, PATHINFO_EXTENSION);
+        $fileName = pathinfo($file_path, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $file_path;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $fileName.'.csv';
+        } 
+                
 
         $row = 1;
         $newCsvData = array();
@@ -262,8 +378,8 @@ class UserFileController extends Controller {
                     $address = $data[1];
                     $locations = explode(">", $address);
                     var_dump($locations);
-                    if(count($locations) <=1){
-                        $data[1] = $data[1].">".$lat.">".$lon;
+                    if (count($locations) <= 1) {
+                        $data[1] = $data[1] . ">" . $lat . ">" . $lon;
                     }
                 }
                 array_push($newCsvData, $data);
@@ -349,7 +465,7 @@ class UserFileController extends Controller {
             Yii::app()->end();
         }
     }
-    
+
     public function actionLocationUpdate() {
         $file_name = $_POST['file_name'];
         $lat = $_POST['lat'];
@@ -358,13 +474,13 @@ class UserFileController extends Controller {
         $this->updateLatLon($file_name, $lat, $lon, $row_id);
         Yii::app()->end();
     }
-    
+
     public function actionDataUpdate() {
         $file_name = $_POST['file_name'];
         $row_id = $_POST['row_id'];
         $column_id = $_POST['column_id'];
         $column_value = $_POST['column_value'];
-        
+
         $model = new UserFile();
         $model->physical_file_name = $file_name;
         $model->row_id = $row_id + 2;
