@@ -174,7 +174,12 @@ class UserFileController extends Controller {
             }
             fclose($handle);
         }
-
+        
+        // to avoid unexpected error
+        if($maxLength < 10){
+            $needChange = 1;
+            $maxLength = 10;
+        }
         //echo '<pre>' . var_export($maxLength, true) . '</pre>';
         //echo '<pre>' . var_export($needChange, true) . '</pre>';
 
