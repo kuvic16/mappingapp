@@ -19,7 +19,8 @@ $this->breadcrumbs = array(
 <div id='basic-modal'>
     <button class="new_btn basic"  onclick="newColumn()">Add New Column</button>
     <button class="new_btn basic"  onclick="addRow()">Add New Row</button>
-    <a class="new_btn" style="border: 2px outset gray; padding: 4px;" href="index.php?r=userFile/map&id=<?php echo $model->id ?>">Show Map</a>
+    <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/map&id=<?php echo $model->id ?>">Show Map</a>
+    <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/upload">Upload another file</a>
     <table class="file-data-table" style="margin-top: 10px;">
         <thead>
             <?php

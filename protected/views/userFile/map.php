@@ -16,8 +16,10 @@ $this->breadcrumbs = array(
 ?>
 
 <h1><?php echo $model->file_name; ?></h1>
-<div id="map" style="height: 600px; width: 900px;  border: 1px solid gray"></div>
-
+<a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/update&id=<?php echo $model->id ?>">Change this file</a>
+<a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/upload">Upload another file</a>
+    
+<div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
 <script type='text/javascript' src='<?php echo Yii::app()->request->baseUrl; ?>/js/jquery.js'></script>
 <script type="text/javascript">
     var locations = [
