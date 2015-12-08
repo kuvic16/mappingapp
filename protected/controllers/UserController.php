@@ -90,6 +90,8 @@ class UserController extends Controller
 		if(isset($_POST['User']))
 		{
 			$model->attributes=$_POST['User'];
+                        $model->renewal_date = date("Y-m-d h:m:s");
+                        $model->subscription_level = "Free user";
                         $model->save();
 		}
 		$this->render('registration',array('model'=>$model,));
