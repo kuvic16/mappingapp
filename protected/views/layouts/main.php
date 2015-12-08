@@ -36,7 +36,7 @@
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
                                 array('label'=>'My Files', 'url'=>array('/userFile/manage'), 'visible'=>!Yii::app()->user->isGuest),
                                 array('label'=>'File Upload', 'url'=>array('/userFile/upload'), 'visible'=>!Yii::app()->user->isGuest),
-                                array('label'=>'Users','url'=>array('/user'), 'visible'=>!Yii::app()->user->isGuest and  Yii::app()->user->name=='admin'),
+                                array('label'=>'Users','url'=>array('/user/admin'), 'visible'=>!Yii::app()->user->isGuest and  Yii::app()->user->name=='admin'),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
 			),
 		)); ?>
