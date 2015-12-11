@@ -108,7 +108,7 @@ if ($length > 1) {
     }
 
     function geocode(geocoder, location, i, callback) {
-        geocoder.geocode({'address': location[1]}, function (results, status) {
+        geocoder.geocode({'address': location[1] + "," + location[2] + "," + location[3] + " " + location[4]}, function (results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
                 if (typeof callback === "function") {
                     callServer(results[0].geometry.location.lat(), results[0].geometry.location.lng(), i+2);
