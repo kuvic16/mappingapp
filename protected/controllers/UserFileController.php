@@ -327,8 +327,7 @@ class UserFileController extends Controller {
             array_push($csvData, $data);
             $row++;
         }
-        echo '<pre>' . var_export($csvData, true) . '</pre>';
-
+        //echo '<pre>' . var_export($csvData, true) . '</pre>';
         //echo '<pre>' . var_export($maxLength, true) . '</pre>';
         //echo '<pre>' . var_export($needChange, true) . '</pre>';
         
@@ -376,13 +375,13 @@ class UserFileController extends Controller {
 
         $row = 1;
         $newCsvData = array();
-        var_dump($row_id);
+        //var_dump($row_id);
         if (($handle = fopen($path, "a+")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 if ($row == $row_id) {
                     $address = $data[1];
                     $locations = explode(">", $address);
-                    var_dump($locations);
+                    //var_dump($locations);
                     if (count($locations) <= 1) {
                         $data[1] = $data[1] . ">" . $lat . ">" . $lon;
                     }
@@ -491,7 +490,7 @@ class UserFileController extends Controller {
         $model->row_id = $row_id + 2;
         $model->column_id = $column_id;
         $model->column_value = $column_value;
-        var_dump($model);
+        //var_dump($model);
         $this->editCsvColumn($model);
         Yii::app()->end();
     }
