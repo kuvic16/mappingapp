@@ -68,7 +68,7 @@ class UserFile extends CActiveRecord
 			'id' => 'ID',
 			'username' => 'Username',
 			'file_name' => 'File Name',
-                        'csv_file' => 'Choos csv file',
+                        'csv_file' => 'Choose CSV/Excel file',
                         'column_name' => 'Column Name',
                         'column_value' => 'Column Value',
                         'column_id' => 'Column Id',
