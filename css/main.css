@@ -432,3 +432,28 @@ text-decoration:none;
     margin-top: -20px;
     float: right;
 }
+
+.searchBox{
+    float: right;
+    height: 25px;
+    left: 113px;
+    margin-top: 10px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 400px;
+    z-index: 0;
+    border: 1px solid #0066CC;
+}
+
+.searchBoxHeader{
+    font-weight: bold; 
+    color: #0066CC;
+    margin: 0px;
+    font-size: 12px;
+}
+
+.searchBoxDetails{
+    margin: 0px;
+    font-size: 10px;
+}

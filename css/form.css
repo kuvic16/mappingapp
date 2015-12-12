@@ -65,6 +65,15 @@ div.form .row
 	margin: 5px 0;
 }
 
+div.form .setuprow
+{
+        margin: 5px;
+        padding: 5px;
+	width: 30%; 
+        float: left;
+        border: 1px outset #09f;
+}
+
 div.form .hint
 {
 	margin: 0;
@@ -75,6 +84,15 @@ div.form .hint
 div.form .note
 {
 	font-style: italic;
+        border: 1px solid red;
+        color: black;
+        padding: 5px;
+}
+
+div.form span.setuprequired
+{
+	color: red;
+        float: right;
 }
 
 div.form span.required
