@@ -30,7 +30,7 @@ class UserFileController extends Controller {
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'upload' and 'update' actions
-                'actions' => array('upload', 'update'),
+                'actions' => array('upload', 'update', 'setup'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -48,17 +48,56 @@ class UserFileController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
-        $model = $this->loadModel($id);
-        $model->csv_data = $this->loadCsvFile($model->physical_file_name);
-        $this->render('map', array(
-            'model' => $model,
-        ));
+        $model = $this->loadModel($id);        
+        if(strlen($model->name_index) !== 0 && strlen($model->address_index) !== 0 && strlen($model->city_index) !== 0 && strlen($model->state_index) !== 0 && strlen($model->zipcode_index) !== 0){
+            $model->csv_data = $this->loadCsvFile($model->physical_file_name);
+            $this->render('map', array(
+                'model' => $model,
+            ));
+        }  else {
+            $this->redirect(array('setup','id'=>$model->id));
+        }
     }
 
     public function actionMap($id) {
+        $model = $this->loadModel($id);        
+        if(strlen($model->name_index) !== 0 && strlen($model->address_index) !== 0 && strlen($model->city_index) !== 0 && strlen($model->state_index) !== 0 && strlen($model->zipcode_index) !== 0){
+            $model->csv_data = $this->loadCsvFile($model->physical_file_name);
+            $this->render('map', array(
+                'model' => $model,
+            ));
+        }  else {
+            $this->redirect(array('setup','id'=>$model->id));
+        }
+    }
+    
+    public function actionSetup($id) {
         $model = $this->loadModel($id);
-        $model->csv_data = $this->loadCsvFile($model->physical_file_name);
-        $this->render('map', array(
+        $model->columns = $this->getColumns($model->physical_file_name);
+        if (isset($_POST['UserFile'])) {
+            $model->name_index = $_POST['UserFile']['name_index'];
+            $model->address_index = $_POST['UserFile']['address_index'];
+            $model->city_index = $_POST['UserFile']['city_index'];
+            $model->state_index = $_POST['UserFile']['state_index'];
+            $model->zipcode_index = $_POST['UserFile']['zipcode_index'];
+            $model->phone_index = $_POST['UserFile']['phone_index'];
+            
+            $model->field1_index = $_POST['UserFile']['field1_index'];
+            $model->field1_label = $_POST['UserFile']['field1_label'];
+            $model->field2_index = $_POST['UserFile']['field2_index'];
+            $model->field2_label = $_POST['UserFile']['field2_label'];
+            $model->field3_index = $_POST['UserFile']['field3_index'];
+            $model->field3_label = $_POST['UserFile']['field3_label'];
+            $model->field4_index = $_POST['UserFile']['field4_index'];
+            $model->field4_label = $_POST['UserFile']['field4_label'];
+            $model->field5_index = $_POST['UserFile']['field5_index'];
+            $model->field5_label = $_POST['UserFile']['field5_label'];
+            
+            //echo '<pre>' . var_export($model, true) . '</pre>';
+            if($model->save())
+		$this->redirect(array('setup','id'=>$model->id));
+        }
+        $this->render('setup', array(
             'model' => $model,
         ));
     }
@@ -97,7 +136,8 @@ class UserFileController extends Controller {
             }
 
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+                //$this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(array('setup', 'id' => $model->id));
         }
 
         $this->render('upload', array(
@@ -362,7 +402,7 @@ class UserFileController extends Controller {
 
     /* location update operation */
 
-    private function updateLatLon($file_path, $lat, $lon, $row_id) {
+    private function updateLatLon($file_path, $lat, $lon, $row_id, $column_id) {
         $app_path = realpath(Yii::app()->basePath . '/../');
         
         $ext = pathinfo($file_path, PATHINFO_EXTENSION);
@@ -379,11 +419,11 @@ class UserFileController extends Controller {
         if (($handle = fopen($path, "a+")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 if ($row == $row_id) {
-                    $address = $data[1];
+                    $address = $data[$column_id];
                     $locations = explode(">", $address);
                     //var_dump($locations);
                     if (count($locations) <= 1) {
-                        $data[1] = $data[1] . ">" . $lat . ">" . $lon;
+                        $data[$column_id] = $data[$column_id] . ">" . $lat . ">" . $lon;
                     }
                 }
                 array_push($newCsvData, $data);
@@ -397,6 +437,49 @@ class UserFileController extends Controller {
             fputcsv($handle, $line);
         }
         fclose($handle);
+    }
+    
+    private function getColumns($fileName) {
+        $app_path = realpath(Yii::app()->basePath . '/../');
+        
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        $orgName = pathinfo($fileName, PATHINFO_FILENAME);
+        $path = $app_path . '/files/' . $fileName;
+        if ($ext === 'xls' || $ext === 'xlsx') {
+            $path = $app_path . '/files/' . $orgName.'.csv';
+        } 
+                
+        $row = 1;
+        $length = 0;
+        $maxLength = -1;
+        $i = 0;
+        //read csv file and store to array
+        if (($handle = fopen($path, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $length = count($data);
+                if ($row == 1) {
+                    $maxLength = $length;
+                }
+                if ($length > $maxLength) {
+                    $maxLength = $length;
+                }
+                $row++;
+            }
+            fclose($handle);
+        }
+        
+        // to avoid unexpected error
+        if($maxLength < 10){
+            $maxLength = 10;
+        }
+        
+        $columns = array();
+        for($i=0; $i<$maxLength; $i++){
+            array_push($columns, "Column ".($i + 1));
+        }
+        
+        //echo '<pre>' . var_export($columns, true) . '</pre>';
+        return $columns;
     }
 
     /**
@@ -475,7 +558,8 @@ class UserFileController extends Controller {
         $lat = $_POST['lat'];
         $lon = $_POST['lon'];
         $row_id = $_POST['row_id'];
-        $this->updateLatLon($file_name, $lat, $lon, $row_id);
+        $column_id = $_POST['column_id'];
+        $this->updateLatLon($file_name, $lat, $lon, $row_id, $column_id);
         Yii::app()->end();
     }
 

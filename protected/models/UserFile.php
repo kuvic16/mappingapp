@@ -10,6 +10,22 @@
  * @property string $physical_file_name
  * @property string $creation_date
  * @property string $last_modified_date
+ * @property string $name_index
+ * @property string $address_index
+ * @property string $city_index
+ * @property string $state_index
+ * @property string $zipcode_index
+ * @property string $phone_index
+ * @property string $field1_index
+ * @property string $field1_label
+ * @property string $field2_index
+ * @property string $field2_label
+ * @property string $field3_index
+ * @property string $field3_label
+ * @property string $field4_index
+ * @property string $field4_label
+ * @property string $field5_index
+ * @property string $field5_label
  */
 class UserFile extends CActiveRecord
 {   
@@ -20,6 +36,7 @@ class UserFile extends CActiveRecord
         public $column_value;
         public $row_id;
         public $column_id;
+        public $columns;
         
 	/**
 	 * @return string the associated database table name
@@ -73,6 +90,22 @@ class UserFile extends CActiveRecord
                         'column_value' => 'Column Value',
                         'column_id' => 'Column Id',
                         'row_id' => 'Row Id',
+                        'name_index' => 'Name column',
+                        'address_index' => 'Address column',
+                        'city_index' => 'City column',
+                        'state_index' => 'State column',
+                        'zipcode_index' => 'Zipcode column',
+                        'phone_index' => 'Phone column',
+                        'field1_index' => 'Misc Field 1 column',
+                        'field1_label' => 'Misc Field 1 Label',
+                        'field2_index' => 'Misc Field 2 column',
+                        'field2_label' => 'Misc Field 2 Label',
+                        'field3_index' => 'Misc Field 3 column',
+                        'field3_label' => 'Misc Field 3 Label',
+                        'field4_index' => 'Misc Field 4 column',
+                        'field4_label' => 'Misc Field 4 Label',
+                        'field5_index' => 'Misc Field 5 column',
+                        'field5_label' => 'Misc Field 5 Label',
 		);
 	}
 
