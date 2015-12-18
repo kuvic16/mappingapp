@@ -8,11 +8,6 @@ $this->breadcrumbs = array(
     'My Files' => array('manage'),
     $model->id,
 );
-//$this->menu=array(
-//	array('label'=>'My Files', 'url'=>array('manage')),
-//	array('label'=>'File Upload', 'url'=>array('upload')),
-//	array('label'=>'Google Map', 'url'=>array('view', 'id'=>$model->id)),	
-//);
 ?>
 
 <h1><?php echo $model->file_name; ?></h1>
@@ -26,31 +21,31 @@ $this->breadcrumbs = array(
     <table class="file-data-table" style="margin-top: 10px;">
         <thead>
             <?php
-            $row = 1;
+//            $row = 1;
             $length = count($model->csv_data); 
-            if($length > 0){
-                $data = $model->csv_data[0];
-                for ($c = 0; $c < count($data); $c++) {
-                    echo '<th class="basic" onclick="editColumn('.$row.','.$c.',\''.$data[$c] .'\')">' . $data[$c] . '</th>';
-                }
-            }
+//            if($length > 0){
+//                $data = $model->csv_data[0];
+//                for ($c = 0; $c < count($data); $c++) {
+//                    echo '<th class="basic" onclick="editColumn('.$row.','.$c.',\''.$data[$c] .'\')">' . $data[$c] . '</th>';
+//                }
+//            }
             ?>
         </thead>
         <tbody>
             <?php
             $row = 1;
-            if($length > 1){
+//            if($length > 1){
                 foreach ($model->csv_data as $data) {
-                    if ($row !== 1) {
+//                    if ($row !== 1) {
                         echo '<tr' . ' class="' . $row . '">';
                         for ($c = 0; $c < count($data); $c++) {
-                            echo '<td class="basic" onclick="editColumn('.$row.','.$c.',\''.$data[$c] .'\')">' . $data[$c] . '</td>';
+                            echo '<td class="basic" onclick="editColumn('.$row.','.$c.',\''.explode(">", $data[$c])[0] .'\')">' . explode(">", $data[$c])[0] . '</td>';
                         }
                         echo '</tr>';
-                    }
+//                    }
                     $row++;
                 }
-            }
+//            }
             ?>
         </tbody>
     </table>
