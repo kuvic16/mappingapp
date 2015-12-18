@@ -20,7 +20,6 @@ $this->menu=array(
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-		'id',
 		'file_name',
                 'creation_date',
                 'last_modified_date',
