@@ -278,7 +278,8 @@ if ($length > 1) {
                     file_name: "<?php echo $model->physical_file_name; ?>",
                     row_id: row_id,
                     column_id: server_column_id,
-                    column_value: $(element).val()
+                    column_value: $(element).val(),
+                    id: "<?php echo $model->id; ?>",
                 },
                 success: function (msg) {
                     locations[row_id][local_column_id] = $(element).val();
