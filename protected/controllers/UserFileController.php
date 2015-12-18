@@ -169,6 +169,10 @@ class UserFileController extends Controller {
             } elseif ($model->is_new === "2") {
                 $this->addCsvRow($model);
             }
+            
+            $userFileModel = $this->loadModel($id);
+            $userFileModel->last_modified_date = date("Y-m-d h:m:s");
+            $userFileModel->save();
             $this->redirect(array('update', 'id' => $model->id));
         }
 
@@ -568,6 +572,7 @@ class UserFileController extends Controller {
         $row_id = $_POST['row_id'];
         $column_id = $_POST['column_id'];
         $column_value = $_POST['column_value'];
+        $userFileId = $_POST['id'];
 
         $model = new UserFile();
         $model->physical_file_name = $file_name;
@@ -576,6 +581,11 @@ class UserFileController extends Controller {
         $model->column_value = $column_value;
         //var_dump($model);
         $this->editCsvColumn($model);
+        
+        $userFileModel = $this->loadModel($userFileId);
+        $userFileModel->last_modified_date = date("Y-m-d h:m:s");
+        $userFileModel->save();
+        
         Yii::app()->end();
     }
 
