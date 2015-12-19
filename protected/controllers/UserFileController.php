@@ -568,24 +568,45 @@ class UserFileController extends Controller {
     }
 
     public function actionDataUpdate() {
-        $file_name = $_POST['file_name'];
-        $row_id = $_POST['row_id'];
-        $column_id = $_POST['column_id'];
-        $column_value = $_POST['column_value'];
-        $userFileId = $_POST['id'];
-
-        $model = new UserFile();
-        $model->physical_file_name = $file_name;
-        $model->row_id = $row_id + 2;
-        $model->column_id = $column_id;
-        $model->column_value = $column_value;
-        //var_dump($model);
-        $this->editCsvColumn($model);
+//        $file_name = $_POST['file_name'];
+//        $row_id = $_POST['row_id'];
+//        $column_id = $_POST['column_id'];
+//        $column_value = $_POST['column_value'];
+//        $userFileId = $_POST['id'];
+//
+//        $model = new UserFile();
+//        $model->physical_file_name = $file_name;
+//        $model->row_id = $row_id + 2;
+//        $model->column_id = $column_id;
+//        $model->column_value = $column_value;
+//        //var_dump($model);
+//        $this->editCsvColumn($model);
+//        
+//        $userFileModel = $this->loadModel($userFileId);
+//        $userFileModel->last_modified_date = date("Y-m-d h:m:s");
+//        $userFileModel->save();
+//        
+//        Yii::app()->end();
+        //var_dump($_POST);
+        $rowData = $_POST['data'];
+        $fileId = $_POST['id'];
+        $rowId = $_POST['row_id'];
         
-        $userFileModel = $this->loadModel($userFileId);
+        $userFileModel = $this->loadModel($fileId);
+        
+        $model = new UserFile();
+        $model->physical_file_name = $userFileModel->physical_file_name;
+        $model->row_id = $rowId + 2;
+
+        foreach($rowData as $row){
+            $model->column_id = $row['column_id'];
+            $model->column_value = $row['column_value'];
+            $this->editCsvColumn($model);
+            //var_dump($model->column_id . " - " . $model->column_value);
+        }
+        
         $userFileModel->last_modified_date = date("Y-m-d h:m:s");
         $userFileModel->save();
-        
         Yii::app()->end();
     }
 
