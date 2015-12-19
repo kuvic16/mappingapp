@@ -329,7 +329,7 @@ text-decoration:none;
 .firstHeading{
     color: #3b5998;
     font-size: 20px;
-    min-width: 350px;
+    width: 300px;
     padding: 5px;
     margin-bottom: 5px;
 }
@@ -348,28 +348,41 @@ text-decoration:none;
     margin-right: 3px;
 }
 
-.map-text-box:active, .map-text-box:focus, .map-text-box:hover{
+/*.map-text-box:active, .map-text-box:focus, .map-text-box:hover{
     border: 1px solid gray;
     border-color: rgba(82, 168, 236, 0.8);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+}*/
+
+.map-text-box-edit{
+    border: 1px solid gray;
+    border-color: rgba(82, 168, 236, 0.8);
+/*    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);*/
     outline: 0 none;
 }
 
-.firstHeading:active, .firstHeading:focus, .firstHeading:hover{
+.map-text-box-edit:active, .map-text-box-edit:focus, .map-text-box-edit:hover{
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);    
+}
+
+/*.firstHeading:active, .firstHeading:focus, .firstHeading:hover{
     border: 1px solid gray;
     border-color: rgba(82, 168, 236, 0.8);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
     outline: 0 none;
-}
+}*/
 
 
 .bodyContent{
     border: 1px solid #8b9dc3;
     background-color: #dfe3ee;
     padding: 10px;
+    width: 290px;
 }
 .bodyContent b{
     color: #3b5998;
+    width: 150px;
 }
 
 .file-data-table thead th{
@@ -418,19 +431,33 @@ text-decoration:none;
     cursor: pointer;
     height: 30px;
     background-color:gold;
+    border-radius: 5px;
 }
 
 .new_btn:hover{
     background-color:red;
-    color: white;
+    color: white !important;
 }
 
 #ntf{
     height: 16px;
     width: 16px;
+    margin-right: 0px;
+    margin-top: -20px;
+    float: right;
+}
+
+.edit{
+    height: 16px;
+    width: 16px;
     margin-right: -20px;
     margin-top: -20px;
     float: right;
+    cursor: pointer;
+}
+
+.edit:hover{
+    background-color: #FBE3E4;
 }
 
 .searchBox{
@@ -456,4 +483,15 @@ text-decoration:none;
 .searchBoxDetails{
     margin: 0px;
     font-size: 10px;
+}
+
+.button-section{
+    text-align: right;
+    width: 313px;
+    margin-top: 5px;
+    height: 35px;
+}
+
+.bottom_btn{
+    display: none;
 }
