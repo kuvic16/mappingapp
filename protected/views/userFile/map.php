@@ -1,7 +1,7 @@
 <script src="http://maps.google.com/maps/api/js?sensor=true&libraries=places" type="text/javascript"></script>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="<?php echo Yii::app()->request->baseUrl; ?>/css/jquery-ui.css" />
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-1.10.2.js"></script>
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-ui.js"></script>
 <link rel="stylesheet" href="<?php echo Yii::app()->request->baseUrl; ?>/css/style.css" />
 <?php
 /* @var $this UserFileController */
