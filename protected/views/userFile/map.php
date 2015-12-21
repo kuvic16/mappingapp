@@ -42,8 +42,9 @@ $this->breadcrumbs = array(
     var field3Label = "<?php echo $model->field3_label; ?>";
     var field4Label = "<?php echo $model->field4_label; ?>";
     var field5Label = "<?php echo $model->field5_label; ?>";
-    
-    var locations = [
+    var locations = [];
+    function loadLocation() {
+        locations = [
 <?php
 $row = 1;
 $Index = 0;
@@ -52,7 +53,7 @@ if ($length > 1) {
     foreach ($model->csv_data as $data) {
         if ($row !== 1) {
             ?>
-                    [
+                        [
             <?php
             if (strlen(trim($model->name_index)) > 0) {
                 echo "'" . $data[$model->name_index] . "'";
@@ -130,8 +131,8 @@ if ($length > 1) {
                 echo "'NULL'";
             }
             ?>,
-                            "'<?php echo $Index; ?>'",
-                    ],
+                                "'<?php echo $Index; ?>'",
+                        ],
             <?php
             $Index++;
         }
@@ -139,7 +140,9 @@ if ($length > 1) {
     }
 }
 ?>
-    ];
+        ];
+        //console.log(locations[0][0] + locations[1][0]);
+    }
 </script>
 
 
@@ -192,6 +195,7 @@ if ($length > 1) {
                 setInfoMessage("Successful!");
                 cancelEditRequest();
                 $("#ntf").hide();
+                loadLocation();
             },
             error: function (xhr) {
                 setInfoMessage("Failed!");
@@ -224,6 +228,7 @@ if ($length > 1) {
 
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/mapping.js"></script>
 <script>
+    loadLocation();
     clearInfoMessage();
 </script>
 
