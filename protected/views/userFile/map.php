@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="<?php echo Yii::app()->request->baseUrl; ?>/css/jquery-ui.css" />
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-1.10.2.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-ui.js"></script>
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/oms.min.js"></script>
 <link rel="stylesheet" href="<?php echo Yii::app()->request->baseUrl; ?>/css/style.css" />
 <?php
 /* @var $this UserFileController */
@@ -20,8 +21,10 @@ $this->breadcrumbs = array(
 
 <input type="text" placeholder="Search..." class="searchBox" id="searchBox" autocomplete="off"/>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
+
+
 <script type="text/javascript">
-    //$("#searchBox").hide();
+    // creating location data in JSON format
     var locations = [
 <?php
 $row = 1;
@@ -119,13 +122,20 @@ if ($length > 1) {
 }
 ?>
     ];
+</script>
 
+
+<script>
+    // global variable
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 7,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     });
     var infowindowlist = new Array();
     var markerlist = new Array();
+
+
+    // map init
     function initMap() {
         google.maps.Map.prototype.clearInfoWindow = function () {
             for (var i = 0; i < infowindowlist.length; i++) {
@@ -156,6 +166,8 @@ if ($length > 1) {
 
     }
 
+
+    // add marker
     function addMarker(map, latlon, locations, i) {
         map.setCenter(latlon);
         var marker = new google.maps.Marker({
@@ -211,6 +223,7 @@ if ($length > 1) {
         });
     }
 
+    // call geocode for lat and lon
     function geocode(geocoder, location, i, callback) {
         geocoder.geocode({'address': location[1] + "," + location[2] + "," + location[3] + " " + location[4]}, function (results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
@@ -224,27 +237,6 @@ if ($length > 1) {
                 }, 20);
             } else {
                 console.error('Geocode for: ' + i + location[1] + ' was not successful for the following reason: ' + status);
-            }
-        });
-    }
-    initMap();
-
-    function callServer(lat, lon, row_id) {
-        $.ajax({
-            type: "POST",
-            url: "<?php echo Yii::app()->createUrl('userFile/locationUpdate'); ?>",
-            data: {
-                file_name: "<?php echo $model->physical_file_name; ?>",
-                lat: lat,
-                lon: lon,
-                row_id: row_id,
-                column_id: "<?php echo $model->address_index; ?>"
-            },
-            success: function (msg) {
-                console.log("Sucess");
-            },
-            error: function (xhr) {
-                console.log("failure" + xhr.readyState + this.url);
             }
         });
     }
@@ -277,7 +269,7 @@ if ($length > 1) {
                 .append("<p class='searchBoxHeader'>" + item[0] + "</p><p class='searchBoxDetails'>" + item[1].split(">")[0] + ", " + item[2] + ", " + item[3] + ", " + item[4] + "</p>")
                 .appendTo(ul);
     };
-    
+
     function editRequest() {
         clearInfoMessage();
         $(".map-text-box").removeAttr('disabled', 'disabled');
@@ -333,5 +325,29 @@ if ($length > 1) {
             }
         });
     }
+
+    function callServer(lat, lon, row_id) {
+        $.ajax({
+            type: "POST",
+            url: "<?php echo Yii::app()->createUrl('userFile/locationUpdate'); ?>",
+            data: {
+                file_name: "<?php echo $model->physical_file_name; ?>",
+                lat: lat,
+                lon: lon,
+                row_id: row_id,
+                column_id: "<?php echo $model->address_index; ?>"
+            },
+            success: function (msg) {
+                console.log("Sucess");
+            },
+            error: function (xhr) {
+                console.log("failure" + xhr.readyState + this.url);
+            }
+        });
+    }
+</script>
+
+<script>
+    initMap();
     clearInfoMessage();
 </script>
