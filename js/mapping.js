@@ -9,6 +9,7 @@ var markerlist = new Array();
 var gm = google.maps;
 var searchBoxElement = $("#searchBox");
 var map;
+var oms;
 
 window.onload = function () {
     map = new gm.Map(document.getElementById('map'), {
@@ -17,18 +18,18 @@ window.onload = function () {
         zoom: 6,
     });
     var iw = new gm.InfoWindow();
-    var oms = new OverlappingMarkerSpiderfier(map, {markersWontMove: true, markersWontHide: true});
+    oms = new OverlappingMarkerSpiderfier(map, {markersWontMove: true, markersWontHide: true});
 
     var usualColor = 'eebb22';
     //var usualColor = 'FE7569';
     var spiderfiedColor = 'ffee22';
     //var spiderfiedColor = 'F78181';
     oms.addListener('click', function (marker) {
-        iw.setContent(marker.desc);
+        iw.setContent(getContentString(marker.rowId));
         iw.open(map, marker);
         $("#ntf").hide();
         cancelEditRequest();
-        
+
     });
     oms.addListener('spiderfy', function (markers) {
         for (var i = 0; i < markers.length; i++) {
@@ -99,32 +100,40 @@ function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
         icon: iconWithColor(usualColor),
         shadow: shadow
     });
+    marker.rowId = i;
+    markerlist[markerlist.length] = marker;
+    oms.addMarker(marker);
+}
+
+function getContentString(i) {
+    var location = locations[i];
+    console.log(location);
     var contentString = '<div id="content">' +
             '<div style="width: 16px; float: right"><img src="' + baseUrl + '/css/ajax-loader.gif" id="ntf" class="ntf"></img></div>' +
             '<img onclick="editRequest()" src="' + baseUrl + '/css/edit.png" class="edit"></img>' +
-            '<input class="' + nameIndex + ' 0 map-text-box firstHeading" id="firstHeading" value="' + locations[0] + '"></input>' +
+            '<input class="' + nameIndex + ' 0 map-text-box firstHeading" id="firstHeading" value="' + location[0] + '"></input>' +
             '<div id="bodyContent" class="bodyContent">' +
-            '<b>Address:</b> <input class="' + addressIndex + ' 1 map-text-box" value="' + locations[1].split(">")[0] + '"></input>' +
-            '<br/><b>City:</b> <input class="' + cityIndex + ' 2 map-text-box" value="' + locations[2] + '"></input>' +
-            '<br/><b>State:</b> <input class="' + stateIndex + ' 3 map-text-box margin-right-3" value="' + locations[3] + '"></input>' +
-            '<br/><b>Zipcode:</b> <input class="' + zipcodeIndex + ' 4 map-text-box" value="' + locations[4] + '"></input>';
-    if (locations[5] !== 'NULL') {
-        contentString = contentString + '<br/><b>Phone:</b><input class="' + phoneIndex + ' 5 map-text-box" value="' + locations[5] + '"></input>';
+            '<b>Address:</b> <input class="' + addressIndex + ' 1 map-text-box" value="' + location[1].split(">")[0] + '"></input>' +
+            '<br/><b>City:</b> <input class="' + cityIndex + ' 2 map-text-box" value="' + location[2] + '"></input>' +
+            '<br/><b>State:</b> <input class="' + stateIndex + ' 3 map-text-box margin-right-3" value="' + location[3] + '"></input>' +
+            '<br/><b>Zipcode:</b> <input class="' + zipcodeIndex + ' 4 map-text-box" value="' + location[4] + '"></input>';
+    if (location[5] !== 'NULL') {
+        contentString = contentString + '<br/><b>Phone:</b><input class="' + phoneIndex + ' 5 map-text-box" value="' + location[5] + '"></input>';
     }
-    if (locations[6] !== 'NULL') {
-        contentString = contentString + '<br/><b>' + field1Label + ':</b><input class="' + field1Index + ' 6 map-text-box" value="' + locations[6] + '"></input>';
+    if (location[6] !== 'NULL') {
+        contentString = contentString + '<br/><b>' + field1Label + ':</b><input class="' + field1Index + ' 6 map-text-box" value="' + location[6] + '"></input>';
     }
-    if (locations[7] !== 'NULL') {
-        contentString = contentString + '<br/><b>' + field2Label + ':</b><input class="' + field2Index + ' 7 map-text-box" value="' + locations[7] + '"></input>';
+    if (location[7] !== 'NULL') {
+        contentString = contentString + '<br/><b>' + field2Label + ':</b><input class="' + field2Index + ' 7 map-text-box" value="' + location[7] + '"></input>';
     }
-    if (locations[8] !== 'NULL') {
-        contentString = contentString + '<br/><b>' + field3Label + ':</b><input class="' + field3Index + ' 8 map-text-box" value="' + locations[8] + '"></input>';
+    if (location[8] !== 'NULL') {
+        contentString = contentString + '<br/><b>' + field3Label + ':</b><input class="' + field3Index + ' 8 map-text-box" value="' + location[8] + '"></input>';
     }
-    if (locations[9] !== 'NULL') {
-        contentString = contentString + '<br/><b>' + field4Label + ':</b><input class="' + field4Index + ' 9 map-text-box" value="' + locations[9] + '"></input>';
+    if (location[9] !== 'NULL') {
+        contentString = contentString + '<br/><b>' + field4Label + ':</b><input class="' + field4Index + ' 9 map-text-box" value="' + location[9] + '"></input>';
     }
-    if (locations[10] !== 'NULL') {
-        contentString = contentString + '<br/><b>' + field5Label + ':</b><input class="' + field5Index + ' 10 map-text-box" value="' + locations[10] + '"></input>';
+    if (location[10] !== 'NULL') {
+        contentString = contentString + '<br/><b>' + field5Label + ':</b><input class="' + field5Index + ' 10 map-text-box" value="' + location[10] + '"></input>';
     }
     contentString = contentString + '</div>';
     contentString = contentString + '<div class="button-section">';
@@ -132,22 +141,8 @@ function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
     contentString = contentString + '<input type="button" class="new_btn bottom_btn" value="Cancel" onclick="cancelEditRequest()"></input>';
     contentString = contentString + '<input class="new_btn bottom_btn" type="button" value="Save" onclick="saveRequest(' + i + ')"></input>';
     contentString = contentString + '</div>' + '</div>';
-
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
-    });
-
-    infowindowlist[infowindowlist.length] = infowindow;
-    markerlist[markerlist.length] = marker;
-
-    marker.desc = contentString;
-    oms.addMarker(marker);
-//        marker.addListener('click', function () {
-//            map.clearInfoWindow();
-//            infowindow.open(map, marker);
-//            $("#ntf").hide();
-//            cancelEditRequest();
-//        });
+    
+    return contentString;
 }
 
 // call geocode for lat and lon
@@ -177,15 +172,19 @@ searchBoxElement.autocomplete({
     },
     select: function (event, ui) {
         searchBoxElement.val(ui.item[0]);
-//        infowindow = new google.maps.InfoWindow();
-//        infowindow = infowindowlist[ui.item[11]];
-//        marker = new google.maps.Marker();
-//        marker = markerlist[ui.item[11]];
+        var i = ui.item[11].replace(/'/g,"");
+        marker = markerlist[i];
         var latLng = new google.maps.LatLng(parseFloat(ui.item[1].split(">")[1]), parseFloat(ui.item[1].split(">")[2]));
         map.setCenter(latLng);
         map.setZoom(15);
-//            infowindow.open(map, marker);
-//            google.maps.event.trigger(marker, 'click');
+        
+        var iw = new gm.InfoWindow();
+        iw.setContent(getContentString(marker.rowId));
+        iw.open(map, marker);
+        
+        $("#ntf").hide();
+        cancelEditRequest();
+        
         return false;
     }
 }).autocomplete("instance")._renderItem = function (ul, item) {
