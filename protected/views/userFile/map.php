@@ -21,7 +21,7 @@ $this->breadcrumbs = array(
 <input type="text" placeholder="Search..." class="searchBox" id="searchBox" autocomplete="off"/>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
 <script type="text/javascript">
-    $("#searchBox").hide();
+    //$("#searchBox").hide();
     var locations = [
 <?php
 $row = 1;
@@ -148,13 +148,8 @@ if ($length > 1) {
             }
         }
 
-        //search box
-        // Create the search box and link it to the UI element.
         var input = document.getElementById('searchBox');
-        //var searchBox = new google.maps.places.SearchBox(input);
         map.controls[google.maps.ControlPosition.RIGHT].push(input);
-
-        // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function () {
             //searchBox.setBounds(map.getBounds());
         });
@@ -212,7 +207,6 @@ if ($length > 1) {
             map.clearInfoWindow();
             infowindow.open(map, marker);
             $("#ntf").hide();
-            //$(".map-text-box").attr('disabled', 'disabled');
             cancelEditRequest();
         });
     }
@@ -283,7 +277,7 @@ if ($length > 1) {
                 .append("<p class='searchBoxHeader'>" + item[0] + "</p><p class='searchBoxDetails'>" + item[1].split(">")[0] + ", " + item[2] + ", " + item[3] + ", " + item[4] + "</p>")
                 .appendTo(ul);
     };
-    //$("#searchBox").show();
+    
     function editRequest() {
         clearInfoMessage();
         $(".map-text-box").removeAttr('disabled', 'disabled');
