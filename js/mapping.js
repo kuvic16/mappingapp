@@ -93,6 +93,7 @@ google.maps.Map.prototype.clearInfoWindow = function () {
 };
 
 function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
+    map.setCenter(latlon);
     var marker = new gm.Marker({
         map: map,
         position: latlon,
