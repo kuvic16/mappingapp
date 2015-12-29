@@ -495,3 +495,14 @@ text-decoration:none;
 .bottom_btn{
     display: none;
 }
+
+.tooltip { 
+    position:absolute;
+    width: 145px;
+    padding: 5px;
+    border: 1px solid gray;
+    font-size: 9pt;
+    font-family: Verdana;
+    background-color: #fff;
+    color: #000;
+}

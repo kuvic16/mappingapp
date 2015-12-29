@@ -3,6 +3,7 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-1.10.2.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-ui.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/oms.min.js"></script>
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/custom_map_tooltip.js"></script>
 <link rel="stylesheet" href="<?php echo Yii::app()->request->baseUrl; ?>/css/style.css" />
 <?php
 /* @var $this UserFileController */

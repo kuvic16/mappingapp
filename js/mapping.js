@@ -29,7 +29,7 @@ window.onload = function () {
         iw.open(map, marker);
         $("#ntf").hide();
         cancelEditRequest();
-
+        setMarkerTooltip(marker);
     });
     oms.addListener('spiderfy', function (markers) {
         for (var i = 0; i < markers.length; i++) {
@@ -44,7 +44,7 @@ window.onload = function () {
             markers[i].setShadow(shadow);
         }
     });
-
+        
     var bounds = new gm.LatLngBounds();
     var geocoder = new google.maps.Geocoder();
     for (i = 0; i < locations.length; i++) {
@@ -97,13 +97,28 @@ function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
     var marker = new gm.Marker({
         map: map,
         position: latlon,
-        title: locations[0],
+//        title: locations[0],
         icon: iconWithColor(usualColor),
-        shadow: shadow
+        shadow: shadow,
+        tooltip: locations[0]
     });
+    setMarkerTooltip(marker);
     marker.rowId = i;
     markerlist[markerlist.length] = marker;
     oms.addMarker(marker);
+}
+
+function setMarkerTooltip(marker){
+    var tooltip = new Tooltip({map: map}, marker);
+    tooltip.bindTo("text", marker, "tooltip");
+    google.maps.event.addListener(marker, 'mouseover', function() {
+        tooltip.addTip();
+        tooltip.getPos2(marker.getPosition());
+    });
+
+    google.maps.event.addListener(marker, 'mouseout', function() {
+        tooltip.removeTip();
+    });
 }
 
 function getContentString(i) {
