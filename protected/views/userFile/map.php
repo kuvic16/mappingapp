@@ -19,6 +19,7 @@ $this->breadcrumbs = array(
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/setup&id=<?php echo $model->id ?>">Map setup</a>    
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/update&id=<?php echo $model->id ?>">Change this file</a>
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/upload">Upload another file</a>
+<a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/filter&id=<?php echo $model->id ?>">Add filter</a>
 
 <input type="text" placeholder="Search..." class="searchBox" id="searchBox" autocomplete="off"/>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
@@ -43,7 +44,11 @@ $this->breadcrumbs = array(
     var field3Label = "<?php echo $model->field3_label; ?>";
     var field4Label = "<?php echo $model->field4_label; ?>";
     var field5Label = "<?php echo $model->field5_label; ?>";
+    var filterColumn = "<?php echo $model->filter_column; ?>";
+    var defaultColor = "<?php echo $model->default_color; ?>";
+    var filter = "<?php echo $model->filter; ?>";
     var locations = [];
+    var fileData = [];
     function loadLocation() {
         locations = [
 <?php
@@ -144,6 +149,30 @@ if ($length > 1) {
         ];
         //console.log(locations[0][0] + locations[1][0]);
     }
+    
+    function loadFileData() {
+        fileData = [
+<?php
+$row = 1;
+$length = count($model->csv_data);
+if ($length > 1) {
+    foreach ($model->csv_data as $data) {
+        if ($row !== 1) {
+            ?>[<?php
+            for ($lj = 0; $lj < count($data); $lj++) {
+            ?><?php
+                echo "'" . $data[$lj] . "'";
+            ?>,<?php
+            }
+            ?>],<?php
+        }
+        $row++;
+    }
+}
+?>
+        ];
+        //console.log(fileData[0]);
+    }
 </script>
 
 
@@ -230,6 +259,7 @@ if ($length > 1) {
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/js/mapping.js"></script>
 <script>
     loadLocation();
+    loadFileData();
     clearInfoMessage();
 </script>
 
