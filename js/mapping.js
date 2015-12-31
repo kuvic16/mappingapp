@@ -20,7 +20,13 @@ window.onload = function () {
     var iw = new gm.InfoWindow();
     oms = new OverlappingMarkerSpiderfier(map, {markersWontMove: true, markersWontHide: true});
 
-    var usualColor = 'eebb22';
+//    var usualColor = '';
+//    if(defaultColor){
+//        usualColor = defaultColor;
+//    }else{
+//        usualColor = 'eebb22';
+//    }
+        
     //var usualColor = 'FE7569';
     var spiderfiedColor = 'ffee22';
     //var spiderfiedColor = 'F78181';
@@ -33,14 +39,14 @@ window.onload = function () {
     });
     oms.addListener('spiderfy', function (markers) {
         for (var i = 0; i < markers.length; i++) {
-            markers[i].setIcon(iconWithColor(spiderfiedColor));
+            markers[i].setIcon(iconWithColor(markers[i].usualColor));
             markers[i].setShadow(null);
         }
         iw.close();
     });
     oms.addListener('unspiderfy', function (markers) {
         for (var i = 0; i < markers.length; i++) {
-            markers[i].setIcon(iconWithColor(usualColor));
+            markers[i].setIcon(iconWithColor(markers[i].usualColor));
             markers[i].setShadow(shadow);
         }
     });
@@ -52,12 +58,12 @@ window.onload = function () {
         if (address.length <= 1) {
             geocode(geocoder, locations[i], i, function (results, i) {
                 bounds.extend(results[0].geometry.location);
-                addMarker(map, results[0].geometry.location, locations[i], i, oms, usualColor, shadow);
+                addMarker(map, results[0].geometry.location, locations[i], i, oms, "", shadow);
             });
         } else {
             var loc = new gm.LatLng(parseFloat(address[1]), parseFloat(address[2]));
             bounds.extend(loc);
-            addMarker(map, loc, locations[i], i, oms, usualColor, shadow);
+            addMarker(map, loc, locations[i], i, oms, "", shadow);
         }
     }
     map.fitBounds(bounds);
@@ -93,6 +99,7 @@ google.maps.Map.prototype.clearInfoWindow = function () {
 };
 
 function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
+    usualColor = getMarkerColorFromFiltering(i);
     map.setCenter(latlon);
     var marker = new gm.Marker({
         map: map,
@@ -104,8 +111,52 @@ function addMarker(map, latlon, locations, i, oms, usualColor, shadow) {
     });
     setMarkerTooltip(marker);
     marker.rowId = i;
+    marker.usualColor = usualColor;
+    
     markerlist[markerlist.length] = marker;
     oms.addMarker(marker);
+}
+
+function getMarkerColorFromFiltering(i){
+    var data = fileData[i];
+    var usualColor = '';
+    if(defaultColor){
+        usualColor = defaultColor;
+    }else{
+        usualColor = 'eebb22';
+    }
+    
+    try{
+        if(filterColumn){
+            var columnValue = data[parseInt(filterColumn)];
+            var filters = filter.split(",");
+
+            for (jj = 0; jj < filters.length; jj++) {
+                var items = filters[jj].split(":");
+
+                if(items[0].trim() === columnValue){
+                    usualColor = items[1].trim();
+                    break;
+                }else{
+                    var maxMin = items[0].trim().split("-");
+                    //console.log(maxMin + "___" + columnValue);
+                    //console.log(maxMin.length);
+                    if(maxMin.length > 1){
+                        var max = maxMin[1].trim();
+                        var min = maxMin[0].trim();
+                        if(parseInt(columnValue) >= parseInt(min) && parseInt(columnValue) <= parseInt(max)){
+                            usualColor = items[1].trim();
+                            break;
+                        }
+                    }
+                }
+            }
+        }    
+    }catch (err){
+        console.log(err);
+    }
+    
+    return usualColor;
 }
 
 function setMarkerTooltip(marker){
@@ -123,7 +174,7 @@ function setMarkerTooltip(marker){
 
 function getContentString(i) {
     var location = locations[i];
-    console.log(location);
+    //console.log(location);
     var contentString = '<div id="content">' +
             '<div style="width: 16px; float: right"><img src="' + baseUrl + '/css/ajax-loader.gif" id="ntf" class="ntf"></img></div>' +
             '<img onclick="editRequest()" src="' + baseUrl + '/css/edit.png" class="edit"></img>' +
