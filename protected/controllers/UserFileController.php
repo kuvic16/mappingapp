@@ -30,7 +30,7 @@ class UserFileController extends Controller {
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'upload' and 'update' actions
-                'actions' => array('upload', 'update', 'setup'),
+                'actions' => array('upload', 'update', 'setup', 'filter'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -98,6 +98,22 @@ class UserFileController extends Controller {
 		$this->redirect(array('setup','id'=>$model->id));
         }
         $this->render('setup', array(
+            'model' => $model,
+        ));
+    }
+    
+    public function actionFilter($id) {
+        $model = $this->loadModel($id);
+        $model->columns = $this->getColumns($model->physical_file_name);
+        if (isset($_POST['UserFile'])) {
+            $model->filter_column = $_POST['UserFile']['filter_column'];
+            $model->default_color = $_POST['UserFile']['default_color'];
+            $model->filter = $_POST['UserFile']['filter'];
+            
+            if($model->save())
+		$this->redirect(array('map','id'=>$model->id));
+        }
+        $this->render('filter', array(
             'model' => $model,
         ));
     }
