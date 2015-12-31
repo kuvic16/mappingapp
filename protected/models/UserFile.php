@@ -26,6 +26,9 @@
  * @property string $field4_label
  * @property string $field5_index
  * @property string $field5_label
+ * @property string $filter_column
+ * @property string $default_color
+ * @property string $filter
  */
 class UserFile extends CActiveRecord
 {   
@@ -106,6 +109,9 @@ class UserFile extends CActiveRecord
                         'field4_label' => 'Misc Field 4 Label',
                         'field5_index' => 'Misc Field 5 column',
                         'field5_label' => 'Misc Field 5 Label',
+                        'filter_column' => 'Filter Column',
+                        'default_color' => 'Default color',
+                        'filter' => 'Filter text',
 		);
 	}
 
