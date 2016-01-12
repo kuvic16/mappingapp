@@ -80,7 +80,7 @@ window.onload = function () {
 
 
 var iconWithColor = function (color) {
-    //return 'http://chart.googleapis.com/chart?chst=d_map_xpin_letter&chld=pin|+|' + color + '|000000|ffff00';
+    color = color.replace("#", ""); 
     return 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + color + '|000000|ffff00';
 }
 

@@ -1,3 +1,4 @@
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-1.10.2.js"></script>
 <?php
 /* @var $this UserFileController */
 /* @var $model UserFile */
@@ -27,17 +28,78 @@ $this->menu = array(
 <div class="form" style="margin-top: 20px">
     <div class="row">
         <?php echo $form->labelEx($model,'filter_column'); ?>
-        <?php echo $form->dropDownList($model, 'filter_column', $model->columns, array('prompt'=>'Select column'));?>
+        <?php echo $form->dropDownList($model, 'filter_column', $model->columns, array('prompt'=>'Select column', 'onchange'=>'columnChangeRequest()'));?>
         
         <?php echo $form->labelEx($model,'default_color'); ?>
-        <?php echo $form->textField($model,'default_color',array('size'=>20,'maxlength'=>45)); ?>`
+        <?php echo $form->colorField($model,'default_color',array('type'=>'color','size'=>20,'maxlength'=>45)); ?>`
         
-        <?php echo $form->labelEx($model,'filter'); ?>
-        <?php echo $form->textArea($model,'filter',array('rows'=>3, 'cols'=>36)); ?>
+        <?php //echo $form->labelEx($model,'filter'); ?>
+        <?php //echo $form->textArea($model,'filter',array('rows'=>3, 'cols'=>36)); ?>
+        
+        <label>Filters</label>
+        <button onclick="addNewFilter(); return false">Add</button>
+        
+        <div id="filters"></div>
+        <input id="count" name="UserFile[count]" type="hidden" />
         
         <div style="clear: both">
             <?php echo CHtml::submitButton('Save', array('class'=>'new_btn basic')); ?>
         </div>
     </div>
 </div>
+<script>
+    var filterText = <?php echo "'".$model->filter."'" ?>;
+    loadFilterElement(filterText);
+    
+    function loadFilterElement(filterText){
+        if(filterText){
+            var filters = filterText.split(",");
+            for (f = 0; f < filters.length; f++) {
+                var items = filters[f].split(":");
+                var html = '<input name="UserFile[f'+ f +']" type="text" value="'+items[0]+'" /><input name="UserFile[c'+ f +']" type="color" value="'+items[1]+'" /><br/>';
+                $("#filters").append(html);
+            }
+            $("#count").val(filters.length);
+        }
+    }
+    
+    function addNewFilter(){
+        var c = $("#count").val();
+        var html = '<input name="UserFile[f'+ c +']" type="text" value="" /><input name="UserFile[c'+ c +']" type="color" /><br/>';
+        $("#filters").append(html);
+        $("#count").val(parseInt(c) + 1);
+    }
+    
+    function columnChangeRequest() {
+        if($("#UserFile_filter_column").val()){
+            $.ajax({
+                type: "POST",
+                url: "<?php echo Yii::app()->createUrl('userFile/columnFiltering'); ?>",
+                data: {
+                    file_name: "<?php echo $model->physical_file_name; ?>",
+                    column_id: $("#UserFile_filter_column").val()
+                },
+                success: function (msg) {
+                    var jsonArray= $.parseJSON(msg);
+                    
+        
+                    $("#filters").html("");
+                    var i = 0;
+                    $.each(jsonArray, function(index,jsonObject){
+                        $.each(jsonObject, function(key,val){
+                            var html = '<input name="UserFile[f'+ i+']" type="text" value="'+key+'" /><input name="UserFile[c'+ i+']" type="color" value="'+val+'" /><br/>';
+                            $("#filters").append(html);
+                            //console.log("key : "+key+" ; value : "+val);
+                            i= i + 1;
+                        });
+                    });
+                    $("#count").val(i)
+                },
+                error: function (xhr) {
+                    console.log("failure" + xhr.readyState + this.url);
+                }
+            });
+        }
+    }
+</script>
 <?php $this->endWidget(); ?>

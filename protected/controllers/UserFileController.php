@@ -26,7 +26,7 @@ class UserFileController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view', 'map', 'locationUpdate', 'dataUpdate'),
+                'actions' => array('index', 'view', 'map', 'locationUpdate', 'dataUpdate', 'columnFiltering'),
                 'users' => array('@'),
             ),
             array('allow', // allow authenticated user to perform 'upload' and 'update' actions
@@ -104,14 +104,27 @@ class UserFileController extends Controller {
     
     public function actionFilter($id) {
         $model = $this->loadModel($id);
+        if(strlen($model->default_color)==0){
+            $model->default_color = "#FE7569";
+        }
         $model->columns = $this->getColumns($model->physical_file_name);
         if (isset($_POST['UserFile'])) {
+            //var_dump($_POST['UserFile']);
             $model->filter_column = $_POST['UserFile']['filter_column'];
             $model->default_color = $_POST['UserFile']['default_color'];
-            $model->filter = $_POST['UserFile']['filter'];
+            $filterCount = $_POST['UserFile']['count'];
+            $filterText = "";
+            for($i=0; $i<$filterCount; $i++){
+                $filterText = $filterText.$_POST['UserFile']['f'.$i].":".$_POST['UserFile']['c'.$i];
+                if ($filterCount-1 !== $i){
+                    $filterText = $filterText.',';
+                }
+            }
+            //var_dump($filterText);
+            $model->filter = $filterText;
             
             if($model->save())
-		$this->redirect(array('map','id'=>$model->id));
+		$this->redirect(array('filter','id'=>$model->id));
         }
         $this->render('filter', array(
             'model' => $model,
@@ -584,26 +597,6 @@ class UserFileController extends Controller {
     }
 
     public function actionDataUpdate() {
-//        $file_name = $_POST['file_name'];
-//        $row_id = $_POST['row_id'];
-//        $column_id = $_POST['column_id'];
-//        $column_value = $_POST['column_value'];
-//        $userFileId = $_POST['id'];
-//
-//        $model = new UserFile();
-//        $model->physical_file_name = $file_name;
-//        $model->row_id = $row_id + 2;
-//        $model->column_id = $column_id;
-//        $model->column_value = $column_value;
-//        //var_dump($model);
-//        $this->editCsvColumn($model);
-//        
-//        $userFileModel = $this->loadModel($userFileId);
-//        $userFileModel->last_modified_date = date("Y-m-d h:m:s");
-//        $userFileModel->save();
-//        
-//        Yii::app()->end();
-        //var_dump($_POST);
         $rowData = $_POST['data'];
         $fileId = $_POST['id'];
         $rowId = $_POST['row_id'];
@@ -624,6 +617,54 @@ class UserFileController extends Controller {
         $userFileModel->last_modified_date = date("Y-m-d h:m:s");
         $userFileModel->save();
         Yii::app()->end();
+    }
+    
+    public function actionColumnFiltering() {
+        $fileName = $_POST['file_name'];
+        $columnId = $_POST['column_id'];
+        $data = $this->loadCsvFile($fileName);
+        
+        $selectedRow = array();
+        foreach ($data as $row) {
+            if(strlen(trim($row[$columnId]))> 0){
+                if (ctype_digit($row[$columnId])) {
+                    array_push($selectedRow, $this->get_range($row[$columnId]));
+                }  else {
+                    array_push($selectedRow, $row[$columnId]);
+                }
+            }
+        }
+        
+        $distinct = array_unique($selectedRow);
+        $filtered = array();
+        foreach ($distinct as $value){
+            array_push($filtered, array($value => '#'.$this->random_color()));
+        }
+        
+        print_r(json_encode($filtered));
+        Yii::app()->end();
+    }
+    
+    public function random_color_part() {
+        return str_pad(dechex(mt_rand(0, 255)), 2, '0', STR_PAD_LEFT);
+    }
+
+    public function random_color() {
+        return $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
+    }
+    
+    public function get_range($number){
+        if($number >=0 && $number < 100){
+            return "0-99";
+        }else if($number >= 100 && $number < 1000){
+            return "100-999";
+        }else if($number >= 1000 && $number < 10000){
+            return "1000-9999";
+        }else if($number >= 10000 && $number < 100000){
+            return "10000-99999";
+        }else if($number >= 1000000 && $number < 10000000){
+            return "1000000-999999";
+        }
     }
 
 }
