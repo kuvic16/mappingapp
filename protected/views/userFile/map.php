@@ -20,7 +20,7 @@ $this->breadcrumbs = array(
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/update&id=<?php echo $model->id ?>">Change this file</a>
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/upload">Upload another file</a>
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/filter&id=<?php echo $model->id ?>">Add filter</a>
-
+<div id="filters_point_block" style="margin-top: 10px"></div>
 <input type="text" placeholder="Search..." class="searchBox" id="searchBox" autocomplete="off"/>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
 
@@ -173,6 +173,20 @@ if ($length > 1) {
         ];
         //console.log(fileData[0]);
     }
+    
+    function loadFilterPointer(){
+        var elm = $("#filters_point_block");
+        console.log(elm);
+        var filters = filter.split(",");
+        for (jj = 0; jj < filters.length; jj++) {
+            var items = filters[jj].split(":");
+            var html = '<span style="margin-right:15px">' + items[0] + '<img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + items[1].replace("#", "")  + '|000000|ffff00" /></span>';
+            //var html = '<img src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2%7Cffff00|000000|ffff00" />';
+            //elm.html(html);            
+            $("#filters_point_block").append(html);
+            console.log(elm);
+        }
+    }
 </script>
 
 
@@ -261,5 +275,6 @@ if ($length > 1) {
     loadLocation();
     loadFileData();
     clearInfoMessage();
+    loadFilterPointer();
 </script>
 
