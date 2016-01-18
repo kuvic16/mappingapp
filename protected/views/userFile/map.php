@@ -181,11 +181,10 @@ if ($length > 1) {
         for (jj = 0; jj < filters.length; jj++) {
             var items = filters[jj].split(":");
             var html = '<span style="margin-right:15px">' + items[0] + '<img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + items[1].replace("#", "")  + '|000000|ffff00" /></span>';
-            //var html = '<img src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2%7Cffff00|000000|ffff00" />';
-            //elm.html(html);            
             $("#filters_point_block").append(html);
-            console.log(elm);
         }
+        var html = '<span style="margin-right:15px"> Others <img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + defaultColor.replace("#", "")  + '|000000|ffff00" /></span>';
+        $("#filters_point_block").append(html);
     }
 </script>
 
