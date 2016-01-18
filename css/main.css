@@ -468,7 +468,7 @@ text-decoration:none;
     position: absolute;
     right: 0;
     top: 0;
-    width: 400px;
+    width: 200px;
     z-index: 0;
     border: 1px solid #0066CC;
 }
@@ -505,4 +505,16 @@ text-decoration:none;
     font-family: Verdana;
     background-color: #fff;
     color: #000;
+}
+
+.filterBox {
+    border: 1px solid #0066cc;
+    float: right;
+    height: 25px;
+    right: 10px !important;
+    margin-top: 10px;
+    position: absolute;
+    top: 0 !important;
+    width: 200px;
+    z-index: 0;
 }

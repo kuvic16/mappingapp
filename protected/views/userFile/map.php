@@ -22,6 +22,7 @@ $this->breadcrumbs = array(
 <a class="new_btn" style="border: 2px outset gray; padding: 4px; text-decoration: none" href="index.php?r=userFile/filter&id=<?php echo $model->id ?>">Add filter</a>
 <div id="filters_point_block" style="margin-top: 10px"></div>
 <input type="text" placeholder="Search..." class="searchBox" id="searchBox" autocomplete="off"/>
+<input type="text" placeholder="Filter..." class="filterBox" id="filterBox" autocomplete="off"/>
 <div id="map" style="height: 600px; width: 900px;  border: 1px solid gray; margin-top: 10px"></div>
 
 

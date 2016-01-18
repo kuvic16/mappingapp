@@ -8,6 +8,7 @@ var infowindowlist = new Array();
 var markerlist = new Array();
 var gm = google.maps;
 var searchBoxElement = $("#searchBox");
+var filterBoxElement = $("#filterBox");
 var map;
 var oms;
 
@@ -70,6 +71,10 @@ window.onload = function () {
 
     var input = document.getElementById('searchBox');
     map.controls[google.maps.ControlPosition.RIGHT].push(input);
+    
+    var filterInput = document.getElementById('filterBox');
+    map.controls[google.maps.ControlPosition.RIGHT].push(filterInput);
+    
     map.addListener('bounds_changed', function () {
         //searchBox.setBounds(map.getBounds());
     });
