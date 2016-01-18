@@ -107,7 +107,8 @@ class UserFileController extends Controller {
         if(strlen($model->default_color)==0){
             $model->default_color = "#FE7569";
         }
-        $model->columns = $this->getColumns($model->physical_file_name);
+        //$model->columns = $this->getColumns($model->physical_file_name);
+        $model->columns = $this->getFilterColumn($model);
         if (isset($_POST['UserFile'])) {
             //var_dump($_POST['UserFile']);
             $model->filter_column = $_POST['UserFile']['filter_column'];
@@ -129,6 +130,15 @@ class UserFileController extends Controller {
         $this->render('filter', array(
             'model' => $model,
         ));
+    }
+    
+    public function getFilterColumn($model){
+        $columns = array();
+        if(isset($model->name_index)){
+            array_push($columns, "Name");
+        }
+        
+        return $columns;
     }
 
     /**
