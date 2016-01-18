@@ -41,6 +41,7 @@ $this->menu = array(
         
         <div id="filters"></div>
         <input id="count" name="UserFile[count]" type="hidden" />
+        <input id="selected_value" name="UserFile[selected_value]" type="hidden" />
         
         <div style="clear: both">
             <?php echo CHtml::submitButton('Save', array('class'=>'new_btn basic')); ?>
@@ -61,6 +62,8 @@ $this->menu = array(
             }
             $("#count").val(filters.length);
         }
+        var selectedColumn = $("#UserFile_filter_column :selected").text();
+        $("#selected_value").val(selectedColumn);
     }
     
     function addNewFilter(){
@@ -71,13 +74,18 @@ $this->menu = array(
     }
     
     function columnChangeRequest() {
-        if($("#UserFile_filter_column").val()){
+        //console.log($("#UserFile_filter_column :selected").text());
+        var selectedColumn = $("#UserFile_filter_column :selected").text();
+        $("#selected_value").val(selectedColumn);
+        //var selectedColumn = $("#UserFile_filter_column").val();
+        if(selectedColumn){
             $.ajax({
                 type: "POST",
                 url: "<?php echo Yii::app()->createUrl('userFile/columnFiltering'); ?>",
                 data: {
+                    id: "<?php echo $model->id; ?>",
                     file_name: "<?php echo $model->physical_file_name; ?>",
-                    column_id: $("#UserFile_filter_column").val()
+                    column_value: selectedColumn
                 },
                 success: function (msg) {
                     var jsonArray= $.parseJSON(msg);

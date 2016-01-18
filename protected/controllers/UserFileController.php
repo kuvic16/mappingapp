@@ -104,6 +104,7 @@ class UserFileController extends Controller {
     
     public function actionFilter($id) {
         $model = $this->loadModel($id);
+        $model->filter_column = $this->getFilterColumnIndexForView($model, $model->filter_column);
         if(strlen($model->default_color)==0){
             $model->default_color = "#FE7569";
         }
@@ -111,7 +112,9 @@ class UserFileController extends Controller {
         $model->columns = $this->getFilterColumn($model);
         if (isset($_POST['UserFile'])) {
             //var_dump($_POST['UserFile']);
-            $model->filter_column = $_POST['UserFile']['filter_column'];
+            $selected_value = $_POST['UserFile']['selected_value'];
+            //$model->filter_column = $_POST['UserFile']['filter_column'];
+            $model->filter_column = $this->getSelectedFilterColumnIndex($model, $selected_value);
             $model->default_color = $_POST['UserFile']['default_color'];
             $filterCount = $_POST['UserFile']['count'];
             $filterText = "";
@@ -134,11 +137,131 @@ class UserFileController extends Controller {
     
     public function getFilterColumn($model){
         $columns = array();
-        if(isset($model->name_index)){
+        if($this->IsNotNullOrEmptyString($model->name_index)){
             array_push($columns, "Name");
         }
-        
+        if($this->IsNotNullOrEmptyString($model->address_index)){
+            array_push($columns, "Address");
+        }
+        if($this->IsNotNullOrEmptyString($model->city_index)){
+            array_push($columns, "City");
+        }
+        if($this->IsNotNullOrEmptyString($model->state_index)){
+            array_push($columns, "State");
+        }
+        if($this->IsNotNullOrEmptyString($model->zipcode_index)){
+            array_push($columns, "Zipcode");
+        }
+        if($this->IsNotNullOrEmptyString($model->phone_index)){
+            array_push($columns, "Phone");
+        }
+        if($this->IsNotNullOrEmptyString($model->field1_index)){
+            array_push($columns, $model->field1_label);
+        }
+        if($this->IsNotNullOrEmptyString($model->field2_index)){
+            array_push($columns, $model->field2_label);
+        }
+        if($this->IsNotNullOrEmptyString($model->field3_index)){
+            array_push($columns, $model->field3_label);
+        }
+        if($this->IsNotNullOrEmptyString($model->field4_index)){
+            array_push($columns, $model->field4_label);
+        }
+        if($this->IsNotNullOrEmptyString($model->field5_index)){
+            array_push($columns, $model->field5_label);
+        }
         return $columns;
+    }
+    
+    public function getFilterColumnIndexForView($model, $columnIndex){
+        $i = 0;
+        
+        if($this->IsNotNullOrEmptyString($model->name_index)){
+            if($model->name_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        
+        if($this->IsNotNullOrEmptyString($model->address_index)){
+            if($model->address_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->city_index)){
+            if($model->city_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->state_index)){
+            if($model->state_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->zipcode_index)){
+            if($model->zipcode_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->phone_index)){
+            if($model->phone_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->field1_index)){
+            if($model->field1_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->field2_index)){
+            if($model->field2_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->field3_index)){
+            if($model->field3_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->field4_index)){
+            if($model->field4_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        if($this->IsNotNullOrEmptyString($model->field5_index)){
+            if($model->field5_index === $columnIndex){
+                return $i;
+            }  else {
+                $i++;
+            }
+        }
+        return "";
+    }
+    
+    function IsNullOrEmptyString($question){
+        return (!isset($question) || trim($question)==='');
+    }
+    function IsNotNullOrEmptyString($question){
+        return (isset($question) && trim($question)!=='');
     }
 
     /**
@@ -630,9 +753,16 @@ class UserFileController extends Controller {
     }
     
     public function actionColumnFiltering() {
+        $fileId = $_POST['id'];
         $fileName = $_POST['file_name'];
-        $columnId = $_POST['column_id'];
+        $selectedValue = $_POST['column_value'];
+        
+        
+        $userFileModel = $this->loadModel($fileId);
         $data = $this->loadCsvFile($fileName);
+        
+        $columnId = $this->getSelectedFilterColumnIndex($userFileModel, $selectedValue);
+        
         
         $selectedRow = array();
         foreach ($data as $row) {
@@ -675,6 +805,43 @@ class UserFileController extends Controller {
         }else if($number >= 1000000 && $number < 10000000){
             return "1000000-999999";
         }
+    }
+    
+    public function getSelectedFilterColumnIndex($model, $selectedValue){
+        if($selectedValue === "Name"){
+            return $model->name_index;
+        }
+        if($selectedValue === "Address"){
+            return $model->address_index;
+        }
+        if($selectedValue === "City"){
+            return $model->city_index;
+        }
+        if($selectedValue === "State"){
+            return $model->state_index;
+        }
+        if($selectedValue === "Zipcode"){
+            return $model->zipcode_index;
+        }
+        if($selectedValue === "Phone"){
+            return $model->phone_index;
+        }
+        if($selectedValue === $model->field1_label){
+            return $model->field1_index;
+        }
+        if($selectedValue === $model->field2_label){
+            return $model->field2_index;
+        }
+        if($selectedValue === $model->field3_label){
+            return $model->field3_index;
+        }
+        if($selectedValue === $model->field4_label){
+            return $model->field4_index;
+        }
+        if($selectedValue === $model->field5_label){
+            return $model->field5_index;
+        }
+        return "";
     }
 
 }
