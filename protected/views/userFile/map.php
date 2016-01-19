@@ -181,7 +181,7 @@ if ($length > 1) {
         var filters = filter.split(",");
         for (jj = 0; jj < filters.length; jj++) {
             var items = filters[jj].split(":");
-            var html = '<span style="margin-right:15px">' + items[0] + '<img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + items[1].replace("#", "")  + '|000000|ffff00" /></span>';
+            var html = '<span style="margin-right:15px; font-size:11px;>' + items[0].split(">")[0] + '<img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + items[1].replace("#", "")  + '|000000|ffff00" /></span>';
             $("#filters_point_block").append(html);
         }
         var html = '<span style="margin-right:15px"> Others <img height="30px" src="http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + defaultColor.replace("#", "")  + '|000000|ffff00" /></span>';
