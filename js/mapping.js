@@ -12,12 +12,27 @@ var filterBoxElement = $("#filterBox");
 var map;
 var oms;
 
-window.onload = function () {
-    map = new gm.Map(document.getElementById('map'), {
+map = new gm.Map(document.getElementById('map'), {
         mapTypeId: gm.MapTypeId.ROADMAP,
         center: new gm.LatLng(50, 0),
         zoom: 6,
-    });
+});
+var input = document.getElementById('searchBox');
+map.controls[google.maps.ControlPosition.RIGHT].push(input);
+    
+var filterInput = document.getElementById('filterBox');
+map.controls[google.maps.ControlPosition.RIGHT].push(filterInput);
+
+window.onload = function () {
+    infowindowlist = new Array();
+    markerlist = new Array();
+    oms = null;
+    
+//    map = new gm.Map(document.getElementById('map'), {
+//        mapTypeId: gm.MapTypeId.ROADMAP,
+//        center: new gm.LatLng(50, 0),
+//        zoom: 6,
+//    });
     var iw = new gm.InfoWindow();
     oms = new OverlappingMarkerSpiderfier(map, {markersWontMove: true, markersWontHide: true});
 
@@ -55,25 +70,27 @@ window.onload = function () {
     var bounds = new gm.LatLngBounds();
     var geocoder = new google.maps.Geocoder();
     for (i = 0; i < locations.length; i++) {
-        var address = locations[i][1].split(">");
-        if (address.length <= 1) {
-            geocode(geocoder, locations[i], i, function (results, i) {
-                bounds.extend(results[0].geometry.location);
-                addMarker(map, results[0].geometry.location, locations[i], i, oms, "", shadow);
-            });
-        } else {
-            var loc = new gm.LatLng(parseFloat(address[1]), parseFloat(address[2]));
-            bounds.extend(loc);
-            addMarker(map, loc, locations[i], i, oms, "", shadow);
+        if(isFiltered(i)){
+            var address = locations[i][1].split(">");
+            if (address.length <= 1) {
+                geocode(geocoder, locations[i], i, function (results, i) {
+                    bounds.extend(results[0].geometry.location);
+                    addMarker(map, results[0].geometry.location, locations[i], i, oms, "", shadow);
+                });
+            } else {
+                var loc = new gm.LatLng(parseFloat(address[1]), parseFloat(address[2]));
+                bounds.extend(loc);
+                addMarker(map, loc, locations[i], i, oms, "", shadow);
+            }
         }
     }
     map.fitBounds(bounds);
 
-    var input = document.getElementById('searchBox');
-    map.controls[google.maps.ControlPosition.RIGHT].push(input);
-    
-    var filterInput = document.getElementById('filterBox');
-    map.controls[google.maps.ControlPosition.RIGHT].push(filterInput);
+//    var input = document.getElementById('searchBox');
+//    map.controls[google.maps.ControlPosition.RIGHT].push(input);
+//    
+//    var filterInput = document.getElementById('filterBox');
+//    map.controls[google.maps.ControlPosition.RIGHT].push(filterInput);
     
     map.addListener('bounds_changed', function () {
         //searchBox.setBounds(map.getBounds());
@@ -264,3 +281,41 @@ searchBoxElement.autocomplete({
             .append("<p class='searchBoxHeader'>" + item[0] + "</p><p class='searchBoxDetails'>" + item[1].split(">")[0] + ", " + item[2] + ", " + item[3] + ", " + item[4] + "</p>")
             .appendTo(ul);
 };
+
+function clearOverlays() {
+  for (var i = 0; i < markerlist.length; i++ ) {
+    markerlist[i].setMap(null);
+  }
+  markerlist.length = 0;
+}
+
+var filterText = "";
+$('#filterBox').keypress(function (e) {
+    var key = e.which;
+    if(key == 13){
+        filterText = this.value;
+        clearOverlays();
+        onload();
+    }
+});
+
+
+function isFiltered(i){
+    //var filterText = $('#filterBox').value;
+    console.log(filterText);
+    if(typeof filterText != 'undefined' && filterText.length > 0){
+        console.log("2");
+        var data = fileData[i];
+        try{
+            if(filterColumn){
+                var columnValue = data[parseInt(filterColumn)];
+                console.log(columnValue);
+                return (filterText === columnValue)? true : false;
+            }    
+        }catch (err){
+            console.log(err);
+        }
+    }else{
+        return true;
+    }
+}
