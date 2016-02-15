@@ -301,20 +301,20 @@ $('#filterBox').keypress(function (e) {
 
 
 function isFiltered(i){
-    //var filterText = $('#filterBox').value;
-    console.log(filterText);
+    //console.log(filterText);
     if(typeof filterText != 'undefined' && filterText.length > 0){
-        console.log("2");
         var data = fileData[i];
         try{
-            if(filterColumn){
-                var columnValue = data[parseInt(filterColumn)];
-                console.log(columnValue);
-                return (filterText === columnValue)? true : false;
-            }    
+
+            for(fi=0; fi<data.length; fi++){
+                if (data[fi].toLowerCase().indexOf(filterText.toLowerCase()) >= 0){
+                    return true;
+                }
+            } 
         }catch (err){
             console.log(err);
         }
+        return false;
     }else{
         return true;
     }
